@@ -1,6 +1,5 @@
 
 import torch.nn as nn
-import torch.utils.model_zoo as model_zoo
 import torch
 from math import pi
 import torch.nn.functional as F
@@ -33,98 +32,71 @@ class Laplace_fast(nn.Module):
 
     def forward(self, waveforms):
         time_disc = torch.linspace(0, 1, steps=int((self.kernel_size)))
-        p1 = time_disc.cuda() - self.b_.cuda() / self.a_.cuda()
+        p1 = time_disc - self.b_ / self.a_
         laplace_filter = Laplace(p1)
-        self.filters = (laplace_filter).view(self.out_channels, 1, self.kernel_size).cuda()
+        self.filters = (laplace_filter).view(self.out_channels, 1, self.kernel_size)
         return F.conv1d(waveforms, self.filters, stride=1, padding=1, dilation=1, bias=None, groups=1)
 
 
-class WKN(nn.modules):
-    def __init__(self):
-        super(WKN, self).__init__()
-        self.conv1 = nn.Conv1d(1, 16, kernel_size=32)
-        self.relu = nn.ReLU()
-        self.pool = nn.MaxPool1d(kernel_size=2, stride=2)
-        self.conv2 = nn.Conv1d(16, 32, kernel_size=3)
-    
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.relu(x)
-        x = self.pool(x)
-        x = self.conv2(x)
-        x = self.relu(x)
-        return x
-
-class BiGRU(nn.Module):
-
-    def __init__(self, input_size, hidden_size, num_layers, num_neurons):
-        super(BiGRU, self).__init__()
-        self.gru = nn.GRU(input_size, hidden_size, num_layers, bidirectional=True)
-        self.fc = nn.Linear(hidden_size * 2, num_neurons)
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(0.5)
-
-    def forward(self, x):
-        x, _ = self.gru(x)
-        x = self.fc(x)
-        x = self.relu(x)
-        x = self.dropout(x)
-        return x
-    
-
-class LA_WKN_LSTM(nn.Module):
+class LA_WKN_BiGRU(nn.Module):
 
     def __init__(self):
-        super(LA_WKN_LSTM, self).__init__()
-        self.args = args
-        self.features = nn.Sequential(
-            Laplace_fast(64, 32),
-            nn.ReLU(inplace=True),
-            nn.MaxPool1d(kernel_size=3, stride=2),
-            nn.Conv1d(64, 192, kernel_size=32, padding=2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool1d(kernel_size=3, stride=2),
-            nn.Conv1d(192, 384, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv1d(384, 256, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv1d(256, 256, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool1d(kernel_size=3, stride=2),
+        super(LA_WKN_BiGRU, self).__init__()
+        self.WKN = nn.Sequential(
+            Laplace_fast(out_channels=32, kernel_size=64, in_channels=1),
+            nn.MaxPool1d(kernel_size=2, stride=2),
+            nn.Conv1d(32, 16, kernel_size=32),
+            nn.MaxPool1d(kernel_size=2, stride=2),
+            nn.Conv1d(16, 32, kernel_size=3),
+            nn.MaxPool1d(kernel_size=2, stride=2),
         )
-        self.lstm = nn.LSTM(input_size=args.out_channels, hidden_size=args.hidden_size,
-                            num_layers=args.num_layers, batch_first=True)
-        self.fc = nn.Linear(args.hidden_size, args.output_size)
-
-
-
-
-# ===============================================================================================
-class CNN_LSTM(nn.Module):
-
-    def __init__(self, args):
-        super(CNN_LSTM, self).__init__()
-        self.args = args
-        self.relu = nn.ReLU(inplace=True)
-        # (batch_size=30, seq_len=24, input_size=7) ---> permute(0, 2, 1)
-        # (30, 7, 24)
-        self.conv = nn.Sequential(
-            nn.Conv1d(in_channels=args.in_channels, out_channels=args.out_channels, kernel_size=3),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=3, stride=1)
+        self.BiGRU = nn.Sequential(
+            nn.GRU(input_size=16, hidden_size=8, num_layers=1, bidirectional=True),
+            nn.Linear(8*2, 8),
+            nn.ReLU()
         )
-        # (batch_size=30, out_channels=32, seq_len-4=20) ---> permute(0, 2, 1)
-        # (30, 20, 32)
-        self.lstm = nn.LSTM(input_size=args.out_channels, hidden_size=args.hidden_size,
-                            num_layers=args.num_layers, batch_first=True)
-        self.fc = nn.Linear(args.hidden_size, args.output_size)
-
+        self.Drop = nn.Dropout(0.5)
+    
     def forward(self, x):
-        x = x.permute(0, 2, 1)
-        x = self.conv(x)
-        x = x.permute(0, 2, 1)
-        x, _ = self.lstm(x)
-        x = self.fc(x)
-        x = x[:, -1, :]
-
+        x = x.unsqueeze(1)
+        x = self.WKN(x)
+        x, _ = self.BiGRU(x)
+        x = self.Drop(x)
         return x
+
+# class BiGRU(nn.Module):
+
+#     def __init__(self, input_size, hidden_size, num_layers, num_neurons):
+#         super(BiGRU, self).__init__()
+#         self.gru = nn.GRU(input_size, hidden_size, num_layers, bidirectional=True)
+#         self.fc = nn.Linear(hidden_size * 2, num_neurons)
+#         self.relu = nn.ReLU()
+#         self.dropout = nn.Dropout(0.5)
+
+#     def forward(self, x):
+#         x, _ = self.gru(x)
+#         x = self.fc(x)
+#         x = self.relu(x)
+#         x = self.dropout(x)
+#         return x
+    
+
+# class LA_WKN_BiGRU(nn.Module):
+
+#     def __init__(self):
+#         super(LA_WKN_BiGRU, self).__init__()
+#         self.wkn_model = WKN()
+#         self.bigru = BiGRU(16, 8, 1, 8)  # 输入大小需要与WKN模型输出通道数匹配
+#         self.fc = nn.Linear(8, 1)
+#         self.sigmoid = nn.Sigmoid()
+
+#     def forward(self, x):
+#         x = self.wkn_model(x)
+#         x = self.bigru(x)
+#         x = self.fc(x)
+#         x = self.sigmoid(x)
+        
+#         return x
+
+
+
