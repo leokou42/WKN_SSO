@@ -40,11 +40,11 @@ class Laplace_fast(nn.Module):
 
         time_disc = torch.linspace(0, 1, steps=int((self.kernel_size)))
 
-        p1 = time_disc.cuda() - self.b_.cuda() / self.a_.cuda()
+        p1 = time_disc - self.b_ / self.a_
 
         laplace_filter = Laplace(p1)
 
-        self.filters = (laplace_filter).view(self.out_channels, 1, self.kernel_size).cuda()
+        self.filters = (laplace_filter).view(self.out_channels, 1, self.kernel_size)
 
 
         return F.conv1d(waveforms, self.filters, stride=1, padding=1, dilation=1, bias=None, groups=1)
