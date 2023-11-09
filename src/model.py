@@ -36,8 +36,9 @@ class Laplace_fast(nn.Module):
         p1 = time_disc.unsqueeze(0) - self.b_ / self.a_
         laplace_filter = Laplace(p1)
         self.filters = (laplace_filter).view(self.out_channels, 1, self.kernel_size)
-        if waveforms.shape == torch.Size([32, 1, 1, 2560]):
-            waveforms = waveforms.view(32, 2560)
+        # if waveforms.shape == torch.Size([32, 1, 1, 2560]):
+        #     waveforms = waveforms.view(32, 2560)
+        waveforms = waveforms.squeeze(2)
         return F.conv1d(waveforms, self.filters, stride=1, padding='same', dilation=1, bias=None, groups=1)
 
 class LA_WKN_BiGRU(nn.Module):
@@ -64,10 +65,12 @@ class LA_WKN_BiGRU(nn.Module):
         )
     
     def forward(self, x):
-        x = x.unsqueeze(1)
-        x = self.WKN(x)        
-        x = x.view(1, 320, 32)
+        x = self.WKN(x)    
+        # print(x.shape)    
+        x = x.permute(0, 2, 1)
         x,_ = self.BiGRU(x)
+        # print(x.shape)
         x = self.FC(x)
+        x = x.squeeze()
         return x
 

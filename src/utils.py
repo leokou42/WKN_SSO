@@ -6,6 +6,10 @@ import os
 def min_max_scale(data):
     min_val = np.min(data)
     max_val = np.max(data)
+    # scaler[0~1]
+    # scaled_data = (data - min_val) / (max_val - min_val) 
+    
+    # scaler[-1~1]
     scaled_data = -1 + 2 * (data - min_val) / (max_val - min_val)
 
     return scaled_data

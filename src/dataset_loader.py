@@ -36,7 +36,7 @@ class CustomDataSet(Dataset):
         inputs = data['horiz accel'].values.astype(float)
         inputs = min_max_scale(inputs).reshape(1, -1)
         inputs = torch.from_numpy(inputs.astype(np.float32))
-        print(inputs.shape)
+        # print(inputs.shape)
 
         label = get_health_index(self.root_dir, file_path)
         label = torch.tensor(label, dtype=torch.float32)

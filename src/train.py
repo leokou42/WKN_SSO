@@ -36,7 +36,7 @@ model = LA_WKN_BiGRU()
 criterion = nn.MSELoss() 
 optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 
-# 训练模型
+# 訓練模型
 for epoch in range(num_epochs):
     model.train()
     for data, labels in train_loader:
@@ -46,14 +46,14 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-    # 在验证集上评估模型
+    # 在驗證集上評估模型
     model.eval()
     correct = 0
     total = 0
     with torch.no_grad():
         for data, labels in val_loader:
             outputs = model(data)
-            _, predicted = torch.max(outputs.data, 1)
+            _, predicted = torch.max(outputs.data, 0)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
