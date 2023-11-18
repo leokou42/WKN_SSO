@@ -65,8 +65,11 @@ class LA_WKN_BiGRU(nn.Module):
     
     def forward(self, x):
         x = self.WKN(x)    
-        # print(x.shape)    
-        x = x.permute(0, 2, 1)
+        # print(x.shape)
+        if x.shape == torch.Size([32, 32, 320]):
+            x = x.permute(0, 2, 1)
+        elif x.shape == torch.Size([32, 320]):
+            x = x.permute(1, 0)
         x,_ = self.BiGRU(x)
         # print(x.shape)
         x = self.FC(x)
