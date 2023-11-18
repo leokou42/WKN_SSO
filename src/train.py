@@ -15,8 +15,10 @@ learning_rate = 0.001
 
 # setup experiment working condition and dataset location
 work_condition = 1
-Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
-Test_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/'
+# Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+# Test_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/'
+Learning_set = "./viberation_dataset/Learning_set/"
+Test_set = "./viberation_dataset/Test_set/"
 
 train_data = CustomDataSet(Learning_set, work_condition)
 test_data = CustomDataSet(Test_set, work_condition)
@@ -53,8 +55,7 @@ for epoch in range(num_epochs):
     num_samples = 0
     with torch.no_grad():
         for data, labels in val_loader:
-            data, labels = data.to(device), labels.to(device)  # Move data to GPU if available
-            outputs = model(data)
+            data, labels = data.to(device), labels.to(device)
             mse = criterion(outputs, labels)
             total_mse += mse.item() * labels.size(0)
             num_samples += labels.size(0)

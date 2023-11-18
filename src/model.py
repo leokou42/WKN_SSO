@@ -74,7 +74,6 @@ class LA_WKN_BiGRU(nn.Module):
         elif x.shape == torch.Size([32, 320]):
             x = x.permute(1, 0)
 
-        x = x.view(x.size(0), -1)
         x,_ = self.BiGRU(x)
         # print(x.shape)
         x = self.FC(x)
