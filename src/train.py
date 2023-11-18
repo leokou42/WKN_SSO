@@ -20,8 +20,8 @@ work_condition = 1
 Learning_set = "./viberation_dataset/Learning_set/"
 Test_set = "./viberation_dataset/Test_set/"
 
-train_data = CustomDataSet(Learning_set, work_condition)
-test_data = CustomDataSet(Test_set, work_condition)
+train_data = CustomDataSet(Learning_set, work_condition, mode='train')
+test_data = CustomDataSet(Test_set, work_condition, mode='test')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
@@ -32,6 +32,7 @@ train_dataset, val_dataset = torch.utils.data.random_split(train_data, [train_si
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size)
+test_loader = DataLoader(test_data, batch_size=batch_size)
 
 model = LA_WKN_BiGRU().to(device)
 
@@ -65,3 +66,4 @@ for epoch in range(num_epochs):
 
 # 保存模型
 torch.save(model.state_dict(), 'your_model.pth')
+

@@ -8,10 +8,12 @@ from torch.utils.data import Dataset
 from utils import *
 
 class CustomDataSet(Dataset):
-    def __init__(self, root_dir, work_condition, transform=None):
+    def __init__(self, root_dir, work_condition,
+                 transform=None, mode='train'):
         self.root_dir = root_dir
         self.work_condition = work_condition
         self.transform = transform
+        self.mode = mode
         self.file_paths = self.get_file_paths()
 
     def get_file_paths(self):
@@ -31,7 +33,7 @@ class CustomDataSet(Dataset):
         
         return file_paths
 
-    def __getitem__(self, index, mode='train'):
+    def __getitem__(self, index):
         file_path = self.file_paths[index]
         data = pd.read_csv(file_path, header=None, names=['hour', 'minute', 'second', 'microsecond', 'horiz accel', 'vert accel'])
 
@@ -40,7 +42,7 @@ class CustomDataSet(Dataset):
         inputs = torch.from_numpy(inputs.astype(np.float32))
         # print(inputs.shape)
 
-        if mode == 'train':
+        if self.mode == 'train':
             label = get_health_index(self.root_dir, file_path)
             label = torch.tensor(label, dtype=torch.float32)
 
@@ -49,7 +51,7 @@ class CustomDataSet(Dataset):
 
             return inputs, label
         
-        elif mode == 'test':
+        elif self.mode == 'test':
             if self.transform:
                 inputs = self.transform(inputs)
             
