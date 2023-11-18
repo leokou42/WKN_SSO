@@ -25,7 +25,9 @@ class CustomDataSet(Dataset):
                 if os.path.isdir(folder_path):
                     for filename in os.listdir(folder_path):
                         if filename.endswith('.csv'):
-                            file_paths.append(os.path.join(folder_path, filename))
+                            pathes = os.path.join(folder_path, filename)
+                            pathes = os.path.normpath(pathes)
+                            file_paths.append(pathes)
         
         return file_paths
 

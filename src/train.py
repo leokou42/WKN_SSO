@@ -15,8 +15,8 @@ learning_rate = 0.001
 
 # setup experiment working condition and dataset location
 work_condition = 1
-Learning_set = './viberation_dataset/Learning_set/'
-Test_set = './viberation_dataset/Test_set/'
+Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+Test_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/'
 
 train_data = CustomDataSet(Learning_set, work_condition)
 test_data = CustomDataSet(Test_set, work_condition)
@@ -31,7 +31,7 @@ train_dataset, val_dataset = torch.utils.data.random_split(train_data, [train_si
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
-model = LA_WKN_BiGRU()
+model = LA_WKN_BiGRU().to(device)
 
 criterion = nn.MSELoss() 
 optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
@@ -40,6 +40,7 @@ optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 for epoch in range(num_epochs):
     model.train()
     for data, labels in train_loader:
+        data, labels = data.to(device), labels.to(device)
         optimizer.zero_grad()
         outputs = model(data)
         loss = criterion(outputs, labels)
@@ -48,17 +49,18 @@ for epoch in range(num_epochs):
 
     # 在驗證集上評估模型
     model.eval()
-    correct = 0
-    total = 0
+    total_mse = 0
+    num_samples = 0
     with torch.no_grad():
         for data, labels in val_loader:
+            data, labels = data.to(device), labels.to(device)  # Move data to GPU if available
             outputs = model(data)
-            _, predicted = torch.max(outputs.data, 0)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+            mse = criterion(outputs, labels)
+            total_mse += mse.item() * labels.size(0)
+            num_samples += labels.size(0)
 
-    accuracy = 100 * correct / total
-    print(f'Epoch {epoch+1}/{num_epochs}, Loss: {loss:.4f}, Validation Accuracy: {accuracy:.2f}%')
+    average_mse = total_mse / num_samples
+    print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
 
 # 保存模型
 torch.save(model.state_dict(), 'your_model.pth')

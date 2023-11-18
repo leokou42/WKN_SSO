@@ -15,8 +15,10 @@ def min_max_scale(data):
     return scaled_data
 
 def get_health_index(root_dir, file_path):
-    bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
-    file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
+    # bearing_name_mac = os.path.join(root_dir, file_path.split('/')[-2])
+    # file_num_mac = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
+    bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
+    file_num = int(file_path.split('\\')[-1].split('_')[-1].split('.')[0])
 
     folder_tot = 0
     for filename in os.listdir(bearing_name):
