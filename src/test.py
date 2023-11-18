@@ -4,11 +4,12 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from dataset_loader import CustomDataSet  # 请替换为你的自定义数据集模块
-from model import LA_WKN_BiGRU  # 请替换为你的模型定义
+from dataset_loader import CustomDataSet
+from model import LA_WKN_BiGRU
 
-# 加载已经训练好的模型
 model = LA_WKN_BiGRU()  # 请替换为你的模型类
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = LA_WKN_BiGRU().to(device)
 model.load_state_dict(torch.load('your_model.pth'))  # 请替换为你的模型.pth文件的路径
 model.eval()  # 切换模型为评估模式
 
