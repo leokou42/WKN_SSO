@@ -11,7 +11,7 @@ work_condition = 1
 batch_size = 32
 
 # Test_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/'
-Test_set = "./viberation_dataset/Test_set/"
+Test_set = "./viberation_dataset/Test_set/Bearing1_3"
 test_data = CustomDataSet(Test_set, work_condition, mode='test')
 test_loader = DataLoader(test_data, batch_size=batch_size)
 

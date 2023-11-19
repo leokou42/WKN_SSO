@@ -17,21 +17,31 @@ class CustomDataSet(Dataset):
         self.file_paths = self.get_file_paths()
 
     def get_file_paths(self):
-        file_paths = []
-        wk = 'Bearing'
-        wk = wk + str(self.work_condition)
-
-        for folder in os.listdir(self.root_dir):
-            if wk in folder:
-                folder_path = os.path.join(self.root_dir, folder)
-                if os.path.isdir(folder_path):
-                    for filename in os.listdir(folder_path):
-                        if filename.endswith('.csv'):
-                            pathes = os.path.join(folder_path, filename)
-                            pathes = os.path.normpath(pathes)
-                            file_paths.append(pathes)
+        if self.mode == 'train':
+            file_paths = []
+            wk = 'Bearing'
+            wk = wk + str(self.work_condition)
+            for folder in os.listdir(self.root_dir):
+                if wk in folder:
+                    folder_path = os.path.join(self.root_dir, folder)
+                    if os.path.isdir(folder_path):
+                        for filename in os.listdir(folder_path):
+                            if filename.endswith('.csv'):
+                                pathes = os.path.join(folder_path, filename)
+                                pathes = os.path.normpath(pathes)
+                                file_paths.append(pathes)
         
+        elif self.mode == 'test':
+            for files in os.listdir(self.root_dir):
+                if files.endswith('.csv'):
+                    pathes = os.path.join(self.root_dir, files)
+                    pathes = os.path.normpath(pathes)
+                    full = check_full_data(pathes)
+                    if full:
+                        file_paths.append(pathes)
+
         return file_paths
+
 
     def __getitem__(self, index):
         file_path = self.file_paths[index]
@@ -40,9 +50,8 @@ class CustomDataSet(Dataset):
         inputs = data['horiz accel'].values.astype(float)
         inputs = min_max_scale(inputs).reshape(1, -1)
         inputs = torch.from_numpy(inputs.astype(np.float32)).cuda()
-        if inputs.size() != torch.Size([1, 2560]):
-
-        # print(inputs.shape)
+        # if inputs.size() != torch.Size([1, 2560]):
+        #     print(inputs.shape)
 
         if self.mode == 'train':
             label = get_health_index(self.root_dir, file_path)

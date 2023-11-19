@@ -28,3 +28,12 @@ def get_health_index(root_dir, file_path):
     hi = np.linspace(1,0,folder_tot)
 
     return hi[file_num-1]
+
+# 把不足2560的找出來，捕0，label也補0（在health index的地方做）
+def check_full_data(file_dir):
+    df = pd.read_csv(file_dir, header=None)
+    row_count = len(df)
+    if row_count == 2560:
+        return True
+    else:
+        return False
