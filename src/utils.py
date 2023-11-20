@@ -15,10 +15,10 @@ def min_max_scale(data):
     return scaled_data
 
 def get_health_index(root_dir, file_path):
-    bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
-    file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
-    # bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
-    # file_num = int(file_path.split('\\')[-1].split('_')[-1].split('.')[0])
+    # bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
+    # file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
+    bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
+    file_num = int(file_path.split('\\')[-1].split('_')[-1].split('.')[0])
 
     folder_tot = 0
     for filename in os.listdir(bearing_name):
@@ -36,3 +36,11 @@ def check_full_data(file_dir):
         return True
     else:
         return False
+
+def output_2_csv(file_name, result):
+    dict = {'health index' : result}
+    df = pd.DataFrame(dict)
+    file_name = 'F:/git_repo/WKN_SSO/result/' + file_name + '.csv'
+    df.to_csv(file_name)
+    print("{} saved".format(file_name))
+

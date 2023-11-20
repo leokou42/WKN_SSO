@@ -9,7 +9,7 @@ from model import LA_WKN_BiGRU
 from dataset_loader import CustomDataSet
 
 # Modelize
-def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_num):
+def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
     # access to cuda
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -66,8 +66,17 @@ def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_num):
     print("Process MSE = {}".format(act_MSE))
 
     # 保存模型
-    model_name = exp_num + '.pth'
+    model_name = exp_name + '.pth'
     torch.save(model.state_dict(), model_name)
     
     return model_name
 
+
+hyper_parameter = [32, 50, 0.001]   # [batch_size, num_epochs, learning_rate]
+Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+work_condition = [1,2,3]
+
+for wc in work_condition:
+    exp_name = 'noSSO_wc'+str(wc)+'_1st'
+    train_result = Train_pipeline(Learning_set, hyper_parameter, wc, exp_name)
+    print("{}, PTH saved done!".format(train_result))

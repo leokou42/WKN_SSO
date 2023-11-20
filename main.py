@@ -1,13 +1,12 @@
-from src.train import *
-from src.test import *
-
+from src.train import Train_pipeline
+from src.test import Test_pipeline
 
 hyper_parameter = [32, 50, 0.001]   # [batch_size, num_epochs, learning_rate]
 Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
 work_condition = 1
-exp_num = 1
+exp_name = 'noSSO_wc2_1st'
 
-train_result = Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_num)
+train_result = Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name)
 print("PTH saved done!")
 
 if work_condition == 1:
