@@ -52,25 +52,3 @@ def Test_pipeline(trained_pth, Test_set, batch_size, work_condition, show_pic = 
     print("{} picture saved".format(Bearing_name))
 
     return Bearing_name, ans
-
-batch_size = 32
-work_condition = [1,2,3]
-    
-for wc in work_condition:
-    tmep_result = []
-    trained_pth = 'noSSO_wc'+str(wc)+'_1st.pth'
-    if wc == 1:
-        Test_set = ['F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_3',
-                    'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_4',
-                    'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_7']
-    elif wc == 2:
-        Test_set = ['F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing2_3',
-                    'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing2_4',
-                    'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing2_6']
-    elif wc == 3:
-        Test_set = ['F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing3_3']
-        
-    for test_set in Test_set:
-        bearing_name, tmp_result = Test_pipeline(trained_pth, test_set, batch_size, wc)
-        output_2_csv(bearing_name, tmp_result)
-
