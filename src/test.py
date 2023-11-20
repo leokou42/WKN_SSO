@@ -10,8 +10,8 @@ from model import LA_WKN_BiGRU
 work_condition = 1
 batch_size = 32
 
-# Test_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/'
-Test_set = "./viberation_dataset/Test_set/Bearing1_3"
+Test_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_4'
+# Test_set = "./viberation_dataset/Test_set/Bearing1_3"
 test_data = CustomDataSet(Test_set, work_condition, mode='test')
 test_loader = DataLoader(test_data, batch_size=batch_size)
 
@@ -21,12 +21,14 @@ model = LA_WKN_BiGRU().to(device)
 model.load_state_dict(torch.load('your_model.pth'))  # 请替换为你的模型.pth文件的路径
 model.eval()  # 切换模型为评估模式
 
+print("target: {}".format(Test_set))
 with torch.no_grad():
     for data in test_loader:
         data = data.to(device)
         outputs = model(data)
 
-print(outputs)
+        print("size: {}".format(outputs.size()))
+        print(outputs)
 # with torch.no_grad():
 #     predicted_remaining_life = model(input_tensor)
 

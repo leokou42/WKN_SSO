@@ -4,7 +4,6 @@ import numpy as np
 import os
 import torch
 from torch.utils.data import Dataset
-
 from utils import *
 
 class CustomDataSet(Dataset):
@@ -17,8 +16,8 @@ class CustomDataSet(Dataset):
         self.file_paths = self.get_file_paths()
 
     def get_file_paths(self):
+        file_paths = []
         if self.mode == 'train':
-            file_paths = []
             wk = 'Bearing'
             wk = wk + str(self.work_condition)
             for folder in os.listdir(self.root_dir):
