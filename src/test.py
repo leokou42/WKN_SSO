@@ -30,20 +30,20 @@ with torch.no_grad():
     for data in test_loader:
         data = data.to(device)
         outputs = model(data)
-        print("size: {}".format(outputs.size()))
+        # print("size: {}".format(outputs.size()))
         # print(outputs)
-
         vals = outputs.tolist()
-        temp_ans.append(vals)
+        for val in vals:
+            temp_ans.append(val)
 
-ans = np.array(temp_ans).flatten().tolist()
-# 繪製圖形
-plt.plot(ans)
-plt.title('Plot of the Data')
-plt.xlabel('Health Index')
-plt.ylabel('Time')
-plt.show()
+print(temp_ans)
 
-# 儲存圖形為圖片文件
-pic_name = Bearing_name + '.png'
+# 繪製圖形並儲存
+plt.plot(temp_ans)
+plt.title(Bearing_name)
+plt.ylabel('Health Index')
+plt.xlabel('Time')
+pic_name = 'F:/git_repo/WKN_SSO/result/' + Bearing_name + '.png'
 plt.savefig(pic_name)
+plt.show()
+print("picture saved")
