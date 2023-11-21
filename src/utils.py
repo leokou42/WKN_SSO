@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
 
 def min_max_scale(data):
     min_val = np.min(data)
@@ -43,4 +44,19 @@ def output_2_csv(file_name, result):
     file_name = 'F:/git_repo/WKN_SSO/result/' + file_name + '.csv'
     df.to_csv(file_name)
     print("{} saved".format(file_name))
+
+def output_2_plot(file_name, result, show_pic = False):
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(result)
+    plt.title(file_name)
+    plt.xlabel('Time')
+    plt.ylabel('Health Index')
+    pic_name = 'F:/git_repo/WKN_SSO/result/' + file_name + '.png'
+    plt.savefig(pic_name)
+
+    if show_pic == True:
+        plt.show()
+
+    print("{} picture saved".format(file_name)) 
 

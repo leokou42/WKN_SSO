@@ -13,7 +13,7 @@ from utils import *
 work_condition = 1
 batch_size = 32
 
-def Test_pipeline(trained_pth, Test_set, batch_size, work_condition, show_pic = False):
+def Test_pipeline(trained_pth, Test_set, batch_size, work_condition):
     Bearing_name = Test_set.split('/')[-1]
     test_data = CustomDataSet(Test_set, work_condition, mode='test')
     test_loader = DataLoader(test_data, batch_size=batch_size)
@@ -38,17 +38,5 @@ def Test_pipeline(trained_pth, Test_set, batch_size, work_condition, show_pic = 
             for val in vals:
                 ans.append(val)
     # print(ans)
-
-    # 繪製圖形並儲存
-    plt.plot(ans)
-    plt.title(Bearing_name)
-    plt.ylabel('Health Index')
-    plt.xlabel('Time')
-    pic_name = 'F:/git_repo/WKN_SSO/result/' + Bearing_name + '.png'
-    plt.savefig(pic_name)
-    if show_pic == True:
-        plt.show()
-        
-    print("{} picture saved".format(Bearing_name))
 
     return Bearing_name, ans

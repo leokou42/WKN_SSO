@@ -4,7 +4,7 @@ sys.path.append("src")
 
 from src.train import Train_pipeline
 from src.test import Test_pipeline
-from src.utils import output_2_csv
+from src.utils import output_2_csv, output_2_plot
 
 # setup
 hyper_parameter = [32, 50, 0.001]   # [batch_size, num_epochs, learning_rate]
@@ -14,11 +14,11 @@ work_condition = [1,2,3]
 exp_topic = 'noSSO'
 exp_num = 1
 
-# train
-for wc in work_condition:
-    exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-    train_result = Train_pipeline(Learning_set, hyper_parameter, wc, exp_name)
-    print("{}, PTH saved done!".format(train_result))
+# # train
+# for wc in work_condition:
+#     exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
+#     train_result = Train_pipeline(Learning_set, hyper_parameter, wc, exp_name)
+#     print("{}, PTH saved done!".format(train_result))
 
 # test
 for wc in work_condition:
@@ -38,5 +38,6 @@ for wc in work_condition:
         tmp_result = []
         bearing_name, tmp_result = Test_pipeline(trained_pth, test_set, batch_size, wc)
         output_2_csv(bearing_name, tmp_result)
+        output_2_plot(bearing_name, tmp_result, True)
 
 print("Finish !")
