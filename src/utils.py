@@ -37,9 +37,25 @@ def check_full_data(file_dir):
         return True
     else:
         return False
+    
+def moving_avg(data, window):
+    MA_data = []
+    for i in range(len(data)):
+        tmp = 0
+        if i < window:
+            MA_data.append(data[i])
+        else:
+            start_point = i - window
+            for j in range(start_point, i):
+                tmp += data[j]
+            
+            MA_data.append(tmp / window)
+
+    return MA_data
 
 def output_2_csv(file_name, result):
-    dict = {'health index' : result}
+    MA_result = moving_avg(result, 5)
+    dict = {'health index' : result, 'MA_health index' : MA_result}
     df = pd.DataFrame(dict)
     file_name = 'F:/git_repo/WKN_SSO/result/' + file_name + '.csv'
     df.to_csv(file_name)
@@ -48,11 +64,17 @@ def output_2_csv(file_name, result):
 def output_2_plot(file_name, result, show_pic = False):
     plt.figure(figsize=(10, 6))
 
-    plt.plot(result)
+    MA_result = moving_avg(result, 5)
+    plt.plot(result, label='prediction', color='blue')
+    plt.plot(MA_result, label='MA prediction', color='red')
+
     plt.title(file_name)
     plt.xlabel('Time')
     plt.ylabel('Health Index')
-    pic_name = 'F:/git_repo/WKN_SSO/result/' + file_name + '.png'
+    plt.legend()
+
+    # pic_name = 'F:/git_repo/WKN_SSO/result/' + file_name + '.png'
+    pic_name = file_name + '.png'
     plt.savefig(pic_name)
 
     if show_pic == True:
