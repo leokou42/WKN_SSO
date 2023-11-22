@@ -22,7 +22,7 @@ exp_num = 1
 
 # test
 for wc in work_condition:
-    trained_pth = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st.pth'
+    trained_pth = 'F:/git_repo/WKN_SSO/result/pth/'+exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st.pth'
     if wc == 1:
         Test_set = ['F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_3',
                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_4',
