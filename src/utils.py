@@ -82,3 +82,4 @@ def output_2_plot(file_name, result, show_pic = False):
 
     print("{} picture saved".format(file_name)) 
 
+a=2
