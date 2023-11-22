@@ -57,7 +57,7 @@ def output_2_csv(file_name, result):
     MA_result = moving_avg(result, 5)
     dict = {'health index' : result, 'MA_health index' : MA_result}
     df = pd.DataFrame(dict)
-    file_name = 'F:/git_repo/WKN_SSO/result/' + file_name + '.csv'
+    file_name = 'F:/git_repo/WKN_SSO/result/csv/' + file_name + '.csv'
     df.to_csv(file_name)
     print("{} saved".format(file_name))
 
@@ -73,8 +73,8 @@ def output_2_plot(file_name, result, show_pic = False):
     plt.ylabel('Health Index')
     plt.legend()
 
-    # pic_name = 'F:/git_repo/WKN_SSO/result/' + file_name + '.png'
-    pic_name = file_name + '.png'
+    pic_name = 'F:/git_repo/WKN_SSO/result/plots/' + file_name + '.png'
+    # pic_name = file_name + '.png'
     plt.savefig(pic_name)
 
     if show_pic == True:

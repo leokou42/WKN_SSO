@@ -65,7 +65,7 @@ def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
     print("Process MSE = {}".format(act_MSE))
 
     # 保存模型
-    model_name = exp_name + '.pth'
+    model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
     torch.save(model.state_dict(), model_name)
     
     return model_name
