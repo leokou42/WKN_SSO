@@ -82,4 +82,21 @@ def output_2_plot(file_name, result, show_pic = False):
 
     print("{} picture saved".format(file_name)) 
 
-a=2
+def loss_2_plot(file_name, loss, mse, show_pic = False):
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(loss, label='loss', color='blue')
+    plt.plot(mse, label='MSE', color='red')
+
+    plt.title(file_name)
+    plt.xlabel('epoch')
+    plt.ylabel('value')
+    plt.legend()
+
+    pic_name = 'F:/git_repo/WKN_SSO/result/train_loss/' + file_name + '.png'
+    plt.savefig(pic_name)
+
+    if show_pic == True:
+        plt.show()
+
+    print("{} picture saved".format(file_name)) 
