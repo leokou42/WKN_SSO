@@ -1,4 +1,5 @@
 
+import time
 import sys
 sys.path.append("src")
 
@@ -11,14 +12,17 @@ hyper_parameter = [32, 50, 0.001]   # [batch_size, num_epochs, learning_rate]
 batch_size = hyper_parameter[0]
 Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
 work_condition = [1,2,3]
-exp_topic = 'noSSO'
+exp_topic = 'noSSO_CNNGru'
 exp_num = 1
 
-# # train
-# for wc in work_condition:
-#     exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-#     train_result = Train_pipeline(Learning_set, hyper_parameter, wc, exp_name)
-#     print("{}, PTH saved done!".format(train_result))
+start_time = time.time()
+# train
+for wc in work_condition:
+    exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
+    train_result = Train_pipeline(Learning_set, hyper_parameter, wc, exp_name)
+    print("{}, PTH saved done!".format(train_result))
+
+print('the elapsed time:%s'% (time.time() - start_time))
 
 # test
 for wc in work_condition:

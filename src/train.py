@@ -5,7 +5,8 @@ import numpy as np
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
 
-from models.LA_WKN_BiGRU import LA_WKN_BiGRU
+# from models.LA_WKN_BiGRU import LA_WKN_BiGRU
+from models.CNN_BiGRU import CNN_GRU
 from dataset_loader import CustomDataSet
 
 def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
@@ -28,7 +29,7 @@ def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
-    model = LA_WKN_BiGRU().to(device)
+    model = CNN_GRU().to(device)
 
     criterion = nn.MSELoss() 
     optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)

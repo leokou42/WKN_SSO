@@ -9,7 +9,7 @@ class CNN_GRU(nn.Module):
     def __init__(self):
         super(CNN_GRU, self).__init__()
         self.CNN = nn.Sequential(
-            nn.Conv1d(32, 16, kernel_size=32, padding='same'),
+            nn.Conv1d(1, 32, kernel_size=4, padding='same'),
             nn.MaxPool1d(kernel_size=2, stride=2),
             nn.Conv1d(32, 16, kernel_size=32, padding='same'),
             nn.MaxPool1d(kernel_size=2, stride=2),
@@ -29,10 +29,10 @@ class CNN_GRU(nn.Module):
     
     def forward(self, x):
         x = x.unsqueeze(1)
-        x = self.WKN(x)    
-        # print(x.shape)    
-        x = x.view(32, 320, 32)
+        x = self.CNN(x)    
+        x = x.permute(0, 2, 1)
         x,_ = self.BiGRU(x)
         x = self.FC(x)
+        x = x.squeeze()
         return x
 
