@@ -5,7 +5,7 @@ import numpy as np
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
 
-from model import LA_WKN_BiGRU
+from models.LA_WKN_BiGRU import LA_WKN_BiGRU
 from dataset_loader import CustomDataSet
 
 def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
