@@ -7,8 +7,7 @@ from torch.utils.data import Dataset
 from utils import *
 
 class CustomDataSet(Dataset):
-    def __init__(self, root_dir, work_condition,
-                 transform=None, mode='train'):
+    def __init__(self, root_dir, work_condition, transform=None, mode='train'):
         self.root_dir = root_dir
         self.work_condition = work_condition
         self.transform = transform

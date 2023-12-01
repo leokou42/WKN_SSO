@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+import random
 
 def min_max_scale(data):
     min_val = np.min(data)
@@ -99,4 +100,18 @@ def loss_2_plot(file_name, loss, mse, show_pic = False):
     if show_pic == True:
         plt.show()
 
-    print("{} picture saved".format(file_name)) 
+    print("{} picture saved".format(file_name))
+
+# 生成隨機數
+def generate_random_numbers(number_range):
+    random_numbers = []
+    for min_value, max_value in number_range:
+        random_value = random.uniform(min_value, max_value)
+        if random_value>1:
+          random_value=int(random_value)
+        random_numbers.append(random_value)
+
+    return random_numbers
+
+def random_select(n):
+    return random.uniform(random_number_range[n][0],random_number_range[n][1])

@@ -42,23 +42,24 @@ class Laplace_fast(nn.Module):
 
 class LA_WKN_BiGRU(nn.Module):
 
-    def __init__(self):
+    def __init__(self, X):
+        self.X = X
         super(LA_WKN_BiGRU, self).__init__()
         self.WKN = nn.Sequential(
-            Laplace_fast(out_channels=32, kernel_size=64),
+            Laplace_fast(out_channels=32, kernel_size=X[1]),  # SSO update kernel size, original = 64
             nn.MaxPool1d(kernel_size=2, stride=2),
-            nn.Conv1d(32, 16, kernel_size=32, padding='same'),
+            nn.Conv1d(32, 16, kernel_size=X[2], padding='same'), # SSO update kernel size, original = 32
             nn.MaxPool1d(kernel_size=2, stride=2),
-            nn.Conv1d(16, 32, kernel_size=3, padding='same'),
+            nn.Conv1d(16, 32, kernel_size=X[3], padding='same'), # SSO update kernel size, original = 3
             nn.MaxPool1d(kernel_size=2, stride=2),
         )
-        self.BiGRU = nn.GRU(input_size=32, hidden_size=8, num_layers=1, bidirectional=True)
+        self.BiGRU = nn.GRU(input_size=32, hidden_size=8, num_layers=X[4], bidirectional=True) #SSO update num_layers, original = 1
 
         self.FC = nn.Sequential(
             nn.Flatten(),
             nn.Linear(5120, 64),
             nn.ReLU(),
-            nn.Dropout(0.5),
+            nn.Dropout(X[5]), # SSO update Dropout rate, original = 0.5
             nn.Linear(64,1),
             nn.Sigmoid()
         )

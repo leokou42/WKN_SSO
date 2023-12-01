@@ -9,15 +9,16 @@ from utils import *
 from models.LA_WKN_BiGRU import LA_WKN_BiGRU
 from dataset_loader import CustomDataSet
 
-def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
+def Train_pipeline(Learning_set, hp, X, work_condition, exp_name):
     # access to cuda
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
 
     # hyperparameter setup
-    batch_size = hyper_parameter[0]
-    num_epochs = hyper_parameter[1]
-    learning_rate = hyper_parameter[2]
+    batch_size = hp[0]
+    num_epochs = hp[1]
+    
+    learning_rate = X[0] # SSO update learning_rate, original = 0.001
 
     # setup experiment working condition and dataset location
     train_data = CustomDataSet(Learning_set, work_condition, mode='train')
@@ -29,7 +30,7 @@ def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
-    model = LA_WKN_BiGRU().to(device)
+    model = LA_WKN_BiGRU(X).to(device)
 
     criterion = nn.MSELoss() 
     optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
