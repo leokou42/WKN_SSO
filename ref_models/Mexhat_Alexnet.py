@@ -13,38 +13,28 @@ def Mexh(p):
 class Mexh_fast(nn.Module):
 
     def __init__(self, out_channels, kernel_size, in_channels=1):
-
         super(Mexh_fast, self).__init__()
-
         if in_channels != 1:
-
             msg = "MexhConv only support one input channel (here, in_channels = {%i})" % (in_channels)
             raise ValueError(msg)
 
         self.out_channels = out_channels
-
         self.kernel_size = kernel_size - 1
-
         if kernel_size % 2 == 0:
             self.kernel_size = self.kernel_size + 1
 
 
         self.a_ = nn.Parameter(torch.linspace(1, 10, out_channels)).view(-1, 1)
-
         self.b_ = nn.Parameter(torch.linspace(0, 10, out_channels)).view(-1, 1)
 
     def forward(self, waveforms):
 
         time_disc_right = torch.linspace(0, (self.kernel_size / 2) - 1,
                                          steps=int((self.kernel_size / 2)))
-
         time_disc_left = torch.linspace(-(self.kernel_size / 2) + 1, -1,
                                         steps=int((self.kernel_size / 2)))
-
         p1 = time_disc_right.cuda() - self.b_.cuda() / self.a_.cuda()
-
         p2 = time_disc_left.cuda() - self.b_.cuda() / self.a_.cuda()
-
         Mexh_right = Mexh(p1)
         Mexh_left = Mexh(p2)
 

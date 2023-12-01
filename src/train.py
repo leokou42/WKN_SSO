@@ -5,6 +5,7 @@ import numpy as np
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
 
+from utils import *
 from models.LA_WKN_BiGRU import LA_WKN_BiGRU
 from dataset_loader import CustomDataSet
 
@@ -35,6 +36,8 @@ def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
 
     # 訓練模型
     act_MSE = 0
+    all_loss = []
+    all_mse = []
     for epoch in range(num_epochs):
         model.train()
         for data, labels in train_loader:
@@ -59,10 +62,14 @@ def Train_pipeline(Learning_set, hyper_parameter, work_condition, exp_name):
 
         average_mse = total_mse / num_samples
         act_MSE += average_mse
+        all_loss.append(loss)
+        all_mse.append(average_mse)
         print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
     
     act_MSE = act_MSE / epoch
     print("Process MSE = {}".format(act_MSE))
+    # loss_2_plot(exp_name, all_loss, all_mse)
+
 
     # 保存模型
     model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
