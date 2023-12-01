@@ -76,4 +76,4 @@ def Train_pipeline(Learning_set, hp, X, work_condition, exp_name):
     model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
     torch.save(model.state_dict(), model_name)
     
-    return model_name
+    return act_MSE

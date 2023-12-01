@@ -102,7 +102,7 @@ def loss_2_plot(file_name, loss, mse, show_pic = False):
 
     print("{} picture saved".format(file_name))
 
-# 生成隨機數
+# 生成隨機解組合
 def generate_random_numbers(number_range):
     random_numbers = []
     for min_value, max_value in number_range:
@@ -113,5 +113,6 @@ def generate_random_numbers(number_range):
 
     return random_numbers
 
-def random_select(n):
+# 生成隨機數
+def random_select(n, random_number_range):
     return random.uniform(random_number_range[n][0],random_number_range[n][1])
