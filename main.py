@@ -13,7 +13,7 @@ batch_size = hyper_parameter[0]
 Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
 work_condition = [1,2,3]
 exp_topic = 'noSSO'
-exp_num = 1
+exp_num = 2
 
 # train
 start_time1 = time.time()
