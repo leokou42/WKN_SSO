@@ -34,10 +34,10 @@ random_number_range = [(0.0001, 0.1), (1, 256), (1, 256), (1, 256), (1, 10), (0.
 start_time = time.time()
 X, FX, pX, pF, gBest, genBest = [], [], [], [], 0, 0,
 value_to_x_dict = {}
-umax=np.array([0]*Njob, dtype=np.float64)
-umin=np.array([1000]*Njob, dtype=np.float64)
+umax = np.array([0] * Njob, dtype=np.float64)
+umin = np.array([1000] * Njob, dtype=np.float64)
 # pX存gbest解pF存值
-gen=0
+gen = 0
 
 
 # In[]:
@@ -55,41 +55,41 @@ for wc in work_condition:
         # value表MSE
         value = Train_pipeline(Learning_set, hyper_parameter, rX, wc, exp_name)
         for job in range(Njob):
-            if X[sol][job]>umax[job]:
-                umax[job]=X[sol][job]
-            if X[sol][job]<umin[job]:
-                umin[job]=X[sol][job]
+            if X[sol][job] > umax[job]:
+                umax[job] = X[sol][job]
+            if X[sol][job] < umin[job]:
+                umin[job] = X[sol][job]
         FX.append(value)
         pF.append(value)
-        if FX[sol]>FX[gBest]:
-            gBest=sol
-            pX[gBest]=rX
+        if FX[sol] > FX[gBest]:
+            gBest = sol
+            pX[gBest] = rX
         print("gen&sol = {} {}, current sol = {}, fit = {}".format(gen,sol ,rX,value))
         value_to_x_dict[value] = (tuple(X[sol]),(gen,sol))
     
     for gen in range(1,Ngen+1):
         for sol in range(Nsol):
-            job=-1
+            job = -1
             #sso
-            while job<Njob+Njob2-1:
-                job+=1
-                rnd2=np.random.rand()
-                if rnd2<Cg:
-                    X[sol][job]=pX[gBest][job]
-                    if X[sol][job]<random_number_range[job][0] or X[sol][job]>random_number_range[job][1]:
-                        X[sol][job]=int(random_select(job))
-                elif rnd2<Cp:
-                    X[sol][job]=pX[sol][job]
-                    if X[sol][job]<random_number_range[job][0] or X[sol][job]>random_number_range[job][1]:
-                        X[sol][job]=int(random_select(job))
-                elif rnd2<Cw:
-                    X[sol][job]=X[sol-1][job]
-                    if X[sol][job]<random_number_range[job][0] or X[sol][job]>random_number_range[job][1]:
-                        X[sol][job]=int(random_select(job))
+            while job < Njob + Njob2 - 1:
+                job += 1
+                rnd2 = np.random.rand()
+                if rnd2 < Cg:
+                    X[sol][job] = pX[gBest][job]
+                    if X[sol][job] < random_number_range[job][0] or X[sol][job] > random_number_range[job][1]:
+                        X[sol][job] = int(random_select(job))
+                elif rnd2 < Cp:
+                    X[sol][job] = pX[sol][job]
+                    if X[sol][job] < random_number_range[job][0] or X[sol][job] > random_number_range[job][1]:
+                        X[sol][job] = int(random_select(job))
+                elif rnd2 < Cw:
+                    X[sol][job] = X[sol-1][job]
+                    if X[sol][job] < random_number_range[job][0] or X[sol][job] > random_number_range[job][1]:
+                        X[sol][job] = int(random_select(job))
                 else:
-                    X[sol][job]=int(random_select(job))
-                    if X[sol][job]<random_number_range[job][0] or X[sol][job]>random_number_range[job][1]:
-                        X[sol][job]=int(random_select(job))
+                    X[sol][job] = int(random_select(job))
+                    if X[sol][job] < random_number_range[job][0] or X[sol][job] > random_number_range[job][1]:
+                        X[sol][job] = int(random_select(job))
                 #計算value
                 ##value表目標值，F表函數，RX是你想更新的變數
                 value = Train_pipeline(Learning_set, hyper_parameter, rX, wc, exp_name)
@@ -98,11 +98,11 @@ for wc in work_condition:
             value_to_x_dict[value] = (tuple(X[sol]),(gen,sol))
             #判斷大小
             print("目前gbest",pF[gBest])
-            if value>pF[sol]:
-                pF[sol]=value
-                if value>pF[gBest]:
-                    gBest=sol
-                    genBest=gen
+            if value > pF[sol]:
+                pF[sol] = value
+                if value > pF[gBest]:
+                    gBest = sol
+                    genBest = gen
                     # torch.save(model.state_dict(), model_name)
                     # print("better than gbest, value = {}".format(value))
             if gen == 1 and sol == 0:
@@ -112,7 +112,7 @@ for wc in work_condition:
     sso_time=end_time_SSO-start_time_SSO
     print("\n==============================================================================================")
     print("optimal sequence:", value_to_x_dict[pF[gBest]][0])
-    print("optimal value: %f"%pF[gBest])
+    print("optimal value: {}".format(pF[gBest]))
     print("optimal generation number:", value_to_x_dict[pF[gBest]][1][0])
     print("optimal sol number:", value_to_x_dict[pF[gBest]][1][1])
     print("sso_time:", sso_time)
