@@ -57,10 +57,13 @@ class LA_WKN_BiGRU(nn.Module):
 
         self.FC = nn.Sequential(
             nn.Flatten(),
+            nn.Dropout(X[5]), # SSO update Dropout rate, original = 0.5
             nn.Linear(5120, 64),
+            nn.Dropout(X[5]), # SSO update Dropout rate, original = 0.5
             nn.ReLU(),
             nn.Dropout(X[5]), # SSO update Dropout rate, original = 0.5
             nn.Linear(64,1),
+            nn.Dropout(X[5]), # SSO update Dropout rate, original = 0.5
             nn.Sigmoid()
         )
     
