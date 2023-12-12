@@ -33,12 +33,12 @@ for wc in work_condition:
         min_mse = act_mse
         model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
         torch.save(train_result, model_name)
+        print("best MSE = {}".format(min_mse))
         print("{}, PTH saved done!".format(model_name))
 end_time1 = time.time()
 train_time = end_time1-start_time1
 
 print("Train Finish !")
-print("best MSE = {}".format(min_mse))
 print("Train Time = {}".format(train_time))
 
 
