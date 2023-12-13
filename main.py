@@ -14,7 +14,9 @@ from src.utils import *
 # setup
 hyper_parameter = [32, 50]   # [batch_size, num_epochs]
 Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
-work_condition = [1,2,3]
+Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set'
+train_vali = [Learning_set, Validation_set]
+work_condition = [1,2]
 exp_topic = 'noSSO'
 exp_num = 2
 
@@ -28,7 +30,7 @@ start_time1 = time.time()
 min_mse = 100
 for wc in work_condition:
     exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-    act_mse ,train_result = Train_pipeline(Learning_set, hyper_parameter, X, wc)
+    act_mse ,train_result = Train_pipeline(train_vali, hyper_parameter, X, wc)
     if act_mse < min_mse:
         min_mse = act_mse
         model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'

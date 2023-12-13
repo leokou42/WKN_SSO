@@ -67,14 +67,13 @@ class LA_WKN_BiGRU(nn.Module):
         )
     
     def forward(self, x):
-        x = self.WKN(x)    
-        x = x.permute(0, 2, 1)
+        x = self.WKN(x)
+        x = x.permute(2, 0, 1)
         x,_ = self.BiGRU(x)
         print("GRU out: {}".format(x.shape))
         x = x.transpose(0, 1)
         x,_ = self.MSA(x,x,x)
         print("MSA out: {}".format(x.shape))
-        x = x.permute(1, 0, 2)
         x = self.FC(x)
         x = x.squeeze()
         return x
@@ -95,6 +94,7 @@ def forward(self, x):
     return x
 '''
 
+# test
 testi = torch.randn(32, 1, 2560).cuda()
 X = [0.001, 64, 32, 3, 1, 0.5]
 model = LA_WKN_BiGRU(X).cuda()

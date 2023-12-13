@@ -11,7 +11,7 @@ from utils import *
 from models.LA_WKN_BiGRU import LA_WKN_BiGRU
 from dataset_loader import CustomDataSet
 
-def Train_pipeline(Learning_set, hp, X, work_condition):
+def Train_pipeline(Learning_Validation, hp, X, work_condition):
     # access to cuda
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -19,21 +19,31 @@ def Train_pipeline(Learning_set, hp, X, work_condition):
     # hyperparameter setup
     batch_size = hp[0]
     num_epochs = hp[1]
-    
     learning_rate = X[0] # SSO update learning_rate, original = 0.001
+    Learning_set = Learning_Validation[0]
+    Validation_set = Learning_Validation[1]
 
     # setup experiment working condition and dataset location
     train_data = CustomDataSet(Learning_set, work_condition, mode='train')
+    val_data = CustomDataSet(Validation_set, work_condition, mode='train')
 
+    # ===================================================================================================
+    # 不同的validation方法:
+    
     train_size = int(0.8 * len(train_data))
     val_size = len(train_data) - train_size
-    # # 隨機抽樣
-    train_dataset, val_dataset = torch.utils.data.random_split(train_data, [train_size, val_size])
+    # 隨機抽樣
+    # train_dataset, val_dataset = torch.utils.data.random_split(train_data, [train_size, val_size])
     # 照順序抽樣
     # train_dataset = torch.utils.data.Subset(train_data, range(train_size))
     # val_dataset = torch.utils.data.Subset(train_data, range(train_size, train_size + val_size))
-    
+    # 使用不同的軸承資料做驗證
+    train_dataset = train_data
+    val_dataset = val_data
     # 改成k fold驗證方法
+
+    # ===================================================================================================
+
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
@@ -65,18 +75,17 @@ def Train_pipeline(Learning_set, hp, X, work_condition):
             for data, labels in val_loader:
                 data, labels = data.to(device), labels.to(device)
                 outputs = model(data)
-                # mse = criterion(outputs, labels)
-                rmse = torch.sqrt(criterion(outputs, labels))
-                # total_mse += mse.item() * labels.size(0)
-                total_mse += rmse.item() * labels.size(0)
+                mse = criterion(outputs, labels)
+                # rmse = torch.sqrt(mse)
+                total_mse += mse.item() * labels.size(0)
                 num_samples += labels.size(0)
 
         average_mse = total_mse / num_samples
         act_MSE += average_mse
         all_loss.append(loss)
         all_mse.append(average_mse)
-        # print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
-        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation RMSE: {average_mse:.4f}')
+        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
+        # print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation RMSE: {average_mse:.4f}')
     
     act_MSE = act_MSE / epoch
     print("Process MSE = {}".format(act_MSE))
