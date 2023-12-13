@@ -89,7 +89,7 @@ def Train_pipeline(Learning_Validation, hp, X, work_condition):
     
     act_MSE = act_MSE / epoch
     print("Process MSE = {}".format(act_MSE))
-    print("Process RMSE = {}".format(act_MSE**2))
+    # print("Process RMSE = {}".format(act_MSE**2))
     # loss_2_plot(exp_name, all_loss, all_mse)
 
 
