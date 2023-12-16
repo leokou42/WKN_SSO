@@ -33,13 +33,13 @@ def Train_pipeline(Learning_Validation, hp, X, work_condition):
     train_size = int(0.8 * len(train_data))
     val_size = len(train_data) - train_size
     # 隨機抽樣
-    # train_dataset, val_dataset = torch.utils.data.random_split(train_data, [train_size, val_size])
+    train_dataset, val_dataset = torch.utils.data.random_split(train_data, [train_size, val_size])
     # 照順序抽樣
     # train_dataset = torch.utils.data.Subset(train_data, range(train_size))
     # val_dataset = torch.utils.data.Subset(train_data, range(train_size, train_size + val_size))
     # 使用不同的軸承資料做驗證
-    train_dataset = train_data
-    val_dataset = val_data
+    # train_dataset = train_data
+    # val_dataset = val_data
     # 改成k fold驗證方法
 
     # ===================================================================================================
@@ -53,6 +53,7 @@ def Train_pipeline(Learning_Validation, hp, X, work_condition):
     optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 
     # 訓練模型
+    best_MSE = 100
     act_MSE = 0
     all_loss = []
     all_mse = []
@@ -86,6 +87,9 @@ def Train_pipeline(Learning_Validation, hp, X, work_condition):
         all_mse.append(average_mse)
         print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
         # print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation RMSE: {average_mse:.4f}')
+        if average_mse < best_MSE:
+            best_MSE = average_mse
+            best_model = model.state_dict()
     
     act_MSE = act_MSE / epoch
     print("Process MSE = {}".format(act_MSE))
@@ -97,7 +101,7 @@ def Train_pipeline(Learning_Validation, hp, X, work_condition):
     # model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
     # torch.save(model.state_dict(), model_name)
     
-    return act_MSE, model.state_dict()
+    return act_MSE, best_MSE, best_model
 
 def SSO_train():
     # SSO setup

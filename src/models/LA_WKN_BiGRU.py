@@ -55,9 +55,10 @@ class LA_WKN_BiGRU(nn.Module):
 
         self.BiGRU = nn.GRU(input_size=32, hidden_size=8, num_layers=X[4], bidirectional=True) #SSO update num_layers, original = 1
 
-        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=4)
+        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=8, batch_first=True)
 
         self.FC = nn.Sequential(
+            nn.Linear(16, 16),
             nn.Flatten(),
             nn.Linear(5120, 64),
             nn.ReLU(),
@@ -67,13 +68,15 @@ class LA_WKN_BiGRU(nn.Module):
         )
     
     def forward(self, x):
+        # print("in: {}".format(x.shape))
         x = self.WKN(x)
-        x = x.permute(2, 0, 1)
+        # print("WKN out: {}".format(x.shape))
+        x = x.permute(0, 2, 1)
         x,_ = self.BiGRU(x)
         # print("GRU out: {}".format(x.shape))
-        x = x.transpose(0, 1)
         x,_ = self.MSA(x,x,x)
         # print("MSA out: {}".format(x.shape))
+        # x = x.permute(1, 0, 2)
         x = self.FC(x)
         x = x.squeeze()
         return x

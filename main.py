@@ -18,7 +18,7 @@ Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set'
 train_vali = [Learning_set, Validation_set]
 work_condition = [1,2]
 exp_topic = 'noSSO'
-exp_num = 3
+exp_num = 4
 
 #[learning rate, LA kernel, conv1 kernel, conv2 kernel, GRU num_layer, Dropout rate]
 random_number_range=[(0.0001, 0.1), (1, 256), (1, 256), (1, 256), (1, 10), (0.1, 0.99)]
@@ -27,16 +27,13 @@ X = [0.001, 64, 32, 3, 1, 0.5]
 
 # train
 start_time1 = time.time()
-min_mse = 100
 for wc in work_condition:
     exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-    act_mse ,train_result = Train_pipeline(train_vali, hyper_parameter, X, wc)
-    if act_mse < min_mse:
-        min_mse = act_mse
-        model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
-        torch.save(train_result, model_name)
-        print("best MSE = {}".format(min_mse))
-        print("{}, PTH saved done!".format(model_name))
+    act_mse, best_mse ,train_result = Train_pipeline(train_vali, hyper_parameter, X, wc)
+    model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
+    torch.save(train_result, model_name)
+    print("best MSE = {}".format(best_mse))
+    print("{}, PTH saved done!".format(model_name))
 end_time1 = time.time()
 train_time = end_time1-start_time1
 
