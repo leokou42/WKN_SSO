@@ -22,6 +22,7 @@ def Train_pipeline(Learning_Validation, hp, X, work_condition):
     learning_rate = X[0] # SSO update learning_rate, original = 0.001
     Learning_set = Learning_Validation[0]
     Validation_set = Learning_Validation[1]
+    Validation_type = Learning_Validation[2]
 
     # setup experiment working condition and dataset location
     train_data = CustomDataSet(Learning_set, work_condition, mode='train')
@@ -32,14 +33,14 @@ def Train_pipeline(Learning_Validation, hp, X, work_condition):
     
     train_size = int(0.8 * len(train_data))
     val_size = len(train_data) - train_size
-    # 隨機抽樣
-    train_dataset, val_dataset = torch.utils.data.random_split(train_data, [train_size, val_size])
-    # 照順序抽樣
-    # train_dataset = torch.utils.data.Subset(train_data, range(train_size))
-    # val_dataset = torch.utils.data.Subset(train_data, range(train_size, train_size + val_size))
-    # 使用不同的軸承資料做驗證
-    # train_dataset = train_data
-    # val_dataset = val_data
+    if Validation_type == 1:    # 隨機抽樣
+        train_dataset, val_dataset = torch.utils.data.random_split(train_data, [train_size, val_size])
+    elif Validation_type == 2:    # 照順序抽樣
+        train_dataset = torch.utils.data.Subset(train_data, range(train_size))
+        val_dataset = torch.utils.data.Subset(train_data, range(train_size, train_size + val_size))
+    elif Validation_type == 3:    # 使用不同的軸承資料做驗證
+        train_dataset = train_data
+        val_dataset = val_data
     # 改成k fold驗證方法
 
     # ===================================================================================================

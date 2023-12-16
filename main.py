@@ -15,7 +15,6 @@ from src.utils import *
 hyper_parameter = [32, 50]   # [batch_size, num_epochs]
 Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
 Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set'
-train_vali = [Learning_set, Validation_set]
 work_condition = [1,2]
 exp_topic = 'noSSO'
 exp_num = 4
@@ -27,18 +26,25 @@ X = [0.001, 64, 32, 3, 1, 0.5]
 
 # train
 start_time1 = time.time()
+result_dict = {}
 for wc in work_condition:
-    exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-    act_mse, best_mse ,train_result = Train_pipeline(train_vali, hyper_parameter, X, wc)
-    model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
-    torch.save(train_result, model_name)
-    print("best MSE = {}".format(best_mse))
-    print("{}, PTH saved done!".format(model_name))
+    for vali_type in range(1,4):
+        train_vali = [Learning_set, Validation_set, vali_type]
+        exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
+        act_mse, best_mse ,train_result = Train_pipeline(train_vali, hyper_parameter, X, wc)
+        model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
+        # torch.save(train_result, model_name)
+        print("best MSE = {}".format(best_mse))
+        print("{}, PTH saved done!".format(model_name))
+        exp_condi = str(wc)+"_"+str(vali_type)
+        result_dict[exp_condi] = [act_mse, best_mse]
+
 end_time1 = time.time()
 train_time = end_time1-start_time1
 
 print("Train Finish !")
 print("Train Time = {}".format(train_time))
+print(result_dict)
 
 
 # # test
