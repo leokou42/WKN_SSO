@@ -42,27 +42,29 @@ class Laplace_fast(nn.Module):
 
 class LA_WKN_BiGRU(nn.Module):
 
-    def __init__(self, X):
-        self.X = X
+    def __init__(self, sX):
+        self.sX = sX
         super(LA_WKN_BiGRU, self).__init__()
         self.WKN = nn.Sequential(
-            Laplace_fast(out_channels=32, kernel_size=X[1]),  # SSO update kernel size, original = 64
+            Laplace_fast(out_channels=32, kernel_size=self.sX[1]),  # SSO update kernel size, original = 64
             nn.MaxPool1d(kernel_size=2, stride=2),
-            nn.Conv1d(32, 16, kernel_size=X[2], padding='same'), # SSO update kernel size, original = 32
+            nn.Conv1d(32, 16, kernel_size=self.sX[2], padding='same'), # SSO update kernel size, original = 32
             nn.MaxPool1d(kernel_size=2, stride=2),
-            nn.Conv1d(16, 32, kernel_size=X[3], padding='same'), # SSO update kernel size, original = 3
+            nn.Conv1d(16, 32, kernel_size=self.sX[3], padding='same'), # SSO update kernel size, original = 3
             nn.MaxPool1d(kernel_size=2, stride=2))
 
-        self.BiGRU = nn.GRU(input_size=32, hidden_size=8, num_layers=X[4], bidirectional=True) #SSO update num_layers, original = 1
+        self.BiGRU = nn.GRU(input_size=32, hidden_size=8, num_layers=sX[4], bidirectional=True) #SSO update num_layers, original = 1
 
-        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=8, batch_first=True)
+        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=8, batch_first=True, dropout=self.sX[5]) 
+        #SSO update num_heads, original = 8
+        #SSO update dropout rate, original = 0.5
 
         self.FC = nn.Sequential(
             nn.Linear(16, 16),
             nn.Flatten(),
             nn.Linear(5120, 64),
             nn.ReLU(),
-            nn.Dropout(X[5]), # SSO update Dropout rate, original = 0.5
+            nn.Dropout(self.sX[6]), # SSO update Dropout rate, original = 0.5
             nn.Linear(64,1),
             nn.Sigmoid()
         )
@@ -96,13 +98,14 @@ def forward(self, x):
     x = x.squeeze()
     return x
 '''
-
+'''
 # test
 testi = torch.randn(32, 1, 2560).cuda()
-X = [0.001, 64, 32, 3, 1, 0.5]
+X = [0.001, 64, 32, 3, 1, 8, 0.5, 0.5, 0.6, 0.6]
 model = LA_WKN_BiGRU(X).cuda()
 
 testo = model(testi)
 
-# print("testo out: {}".format(testo.shape))
+print("testo out: {}".format(testo.shape))
+'''
 

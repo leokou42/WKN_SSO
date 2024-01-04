@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import random
+import csv
 
 def min_max_scale(data):
     min_val = np.min(data)
@@ -118,7 +119,7 @@ def generate_random_numbers(number_range):
     random_numbers = []
     for min_value, max_value in number_range:
         random_value = random.uniform(min_value, max_value)
-        if random_value>1:
+        if random_value > 1:
           random_value=int(random_value)
         random_numbers.append(random_value)
 
@@ -127,3 +128,25 @@ def generate_random_numbers(number_range):
 # 生成隨機數
 def random_select(n, random_number_range):
     return random.uniform(random_number_range[n][0],random_number_range[n][1])
+
+def find_min_key_value(dictionary):
+    if not dictionary:
+        return None, None  # 如果字典是空的，返回None
+
+    min_key = min(dictionary.keys())
+    min_value = dictionary[min_key]
+    
+    return min_key, min_value
+
+def SSO_2_csv(filename, value_to_x_dict):
+    header = ['score', 'params', 'indices']
+    # Writing to CSV
+    with open(filename, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        
+        # Write header
+        writer.writerow(header)
+        
+        # Write data
+        for score, (params, indices) in value_to_x_dict.items():
+            writer.writerow([score, params, indices])

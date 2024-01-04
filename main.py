@@ -6,38 +6,62 @@ import numpy as np
 import random
 import torch
 
-from src.train import Train_pipeline
-from src.test import Test_pipeline
+# from src.train import Train_pipeline
+# from src.test import Test_pipeline
+from src.SSO_aug import SSO_train
 from src.utils import *
 
-
 # setup
-hyper_parameter = [32, 50]   # [batch_size, num_epochs]
+hyper_parameter = [32, 15]   # [batch_size, num_epochs]
 Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
-Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set'
+Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
 work_condition = [1,2]
-exp_topic = 'noSSO'
+exp_topic = 'SSO'
 exp_num = 4
 
-#[learning rate, LA kernel, conv1 kernel, conv2 kernel, GRU num_layer, Dropout rate]
-random_number_range=[(0.0001, 0.1), (1, 256), (1, 256), (1, 256), (1, 10), (0.1, 0.99)]
+#[learning rate, LA kernel, conv1 kernel, conv2 kernel, GRU num_layer, MSA heads, MSA Dropout rate, FC Dropout rate, label twist_point, label slope]
+random_number_range=[(0.0001, 0.1), (1, 256), (1, 256), (1, 256), (1, 10), (0.1, 0.99), (0.1, 0.99), (0.5, 0.99), (0.5, 0.99)]
+iX = [0.001, 64, 32, 3, 1, 0.5, 0.3, 0.6, 0.6]
 start_time = time.time()
-X = [0.001, 64, 32, 3, 1, 0.5]
+
+# SSO setup
+Cg = 0.1  #GBEST區間
+Cp = 0.3  #PBEST區間
+Cw = 0.6  #前解區間
+Nsol = 3
+Ngen = 2
+
+# train
+# setup
+hyper_parameter = [32, 15]   # [batch_size, num_epochs]
+Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
+work_condition = [1,2]
+exp_topic = 'SSO'
+exp_num = 4
+
+#[learning rate, LA kernel, conv1 kernel, conv2 kernel, GRU num_layer, MSA heads, MSA Dropout rate, FC Dropout rate, label twist_point, label slope]
+random_number_range=[(0.0001, 0.1), (32, 256), (1, 64), (1, 32), (1, 10), (0.1, 0.99), (0.1, 0.99), (0.5, 0.99), (0.5, 0.99)]
+iX = [0.001, 64, 32, 3, 1, 0.5, 0.3, 0.6, 0.6]
+start_time = time.time()
+
+# SSO setup
+Cg = 0.1  #GBEST區間
+Cp = 0.3  #PBEST區間
+Cw = 0.6  #前解區間
+Nsol = 6
+Ngen = 10
 
 # train
 start_time1 = time.time()
+train_vali = [Learning_set, Validation_set, 1]
 result_dict = {}
 for wc in work_condition:
-    for vali_type in range(1,4):
-        train_vali = [Learning_set, Validation_set, vali_type]
-        exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-        act_mse, best_mse ,train_result = Train_pipeline(train_vali, hyper_parameter, X, wc)
-        model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
-        # torch.save(train_result, model_name)
-        print("best MSE = {}".format(best_mse))
-        print("{}, PTH saved done!".format(model_name))
-        exp_condi = str(wc)+"_"+str(vali_type)
-        result_dict[exp_condi] = [act_mse, best_mse]
+    train_detail = [train_vali, hyper_parameter, wc]
+    exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
+    all_result = SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, iX, train_detail)
+    min_key, min_value = find_min_key_value(all_result)
+    print("min_key = {} , value of {}".format(min_key, min_value))
 
 end_time1 = time.time()
 train_time = end_time1-start_time1
@@ -45,7 +69,6 @@ train_time = end_time1-start_time1
 print("Train Finish !")
 print("Train Time = {}".format(train_time))
 print(result_dict)
-
 
 # # test
 # start_time2 = time.time()
