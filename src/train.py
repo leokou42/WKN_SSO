@@ -17,6 +17,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     print(device)
 
     # hyperparameter setup
+    sX = SSO_hp_trans(sX)
     batch_size = hp[0]
     num_epochs = hp[1]
     learning_rate = sX[0] # SSO update learning_rate, original = 0.001
@@ -115,7 +116,7 @@ if __name__ == "__main__":
     train_vali = [Learning_set, Validation_set, 3]
 
     # regular train
-    iX = [0.001, 32, 64, 16, 32, 32, 3, 1, 0.5, 64, 0.3, 0.7, 0.7]
+    iX = [10, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 70, 70]
     start_time1 = time.time()
     wc1 = []
     wc2 = []

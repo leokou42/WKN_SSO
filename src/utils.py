@@ -121,7 +121,7 @@ def generate_random_numbers(number_range):
     for min_value, max_value in number_range:
         random_value = random.uniform(min_value, max_value)
         if random_value > 1:
-          random_value=int(random_value)
+          random_value = int(random_value)
         random_numbers.append(random_value)
 
     return random_numbers
@@ -158,3 +158,12 @@ def setup_seed(seed):
      np.random.seed(seed)
      random.seed(seed)
      torch.backends.cudnn.deterministic = True
+
+def SSO_hp_trans(iX):
+    iX[0] = iX[0]/10000
+    iX[8] = iX[8]/100
+    iX[10] = iX[10]/100
+    iX[11] = iX[11]/100
+    iX[12] = iX[12]/100
+
+    return iX

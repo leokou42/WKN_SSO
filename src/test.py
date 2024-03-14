@@ -32,6 +32,7 @@ def Test_pipeline(trained_pth, batch_size, sX, work_condition):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(device)
 
+        sX = SSO_hp_trans(sX)
         model = LA_WKN_BiGRU(sX).to(device)
 
         model.load_state_dict(torch.load(trained_pth))
