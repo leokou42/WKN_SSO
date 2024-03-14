@@ -5,6 +5,7 @@ import os
 import matplotlib.pyplot as plt
 import random
 import csv
+import torch
 
 def min_max_scale(data):
     min_val = np.min(data)
@@ -150,3 +151,10 @@ def SSO_2_csv(filename, value_to_x_dict):
         # Write data
         for score, (params, indices) in value_to_x_dict.items():
             writer.writerow([score, params, indices])
+
+def setup_seed(seed):
+     torch.manual_seed(seed)
+     torch.cuda.manual_seed_all(seed)
+     np.random.seed(seed)
+     random.seed(seed)
+     torch.backends.cudnn.deterministic = True

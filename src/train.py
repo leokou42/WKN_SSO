@@ -25,7 +25,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     Validation_type = Learning_Validation[2]
     
     # setup experiment working condition and dataset location
-    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[7], sX[8]])
+    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[sX[11], sX[12]])
     val_data = CustomDataSet(Validation_set, work_condition, transform=None, mode='train')
 
     # ===================================================================================================
@@ -52,6 +52,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     criterion = nn.MSELoss() 
     optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 
+    print(sX)
     # 訓練模型
     best_MSE = 100
     act_MSE = 0
@@ -91,35 +92,50 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
             best_MSE = average_mse
             best_model = model.state_dict()
     
-    act_MSE = act_MSE / epoch
+    act_MSE = act_MSE / num_epochs
     print("Process MSE = {}".format(act_MSE))
     # print("Process RMSE = {}".format(act_MSE**2))
-    loss_2_plot('loss & MSE', all_loss, all_mse)
+    Lossplot = 'loss & MSE'+str(work_condition)
+    loss_2_plot(Lossplot, all_loss, all_mse)
     
     return act_MSE, best_MSE, best_model
 
-# noSSO training 
-# setup
-hyper_parameter = [32, 20]   # [batch_size, num_epochs]
-Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
-Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set'
-work_condition = [1,2,3]
-exp_topic = 'noSSO'
-exp_num = 5
-train_vali = [Learning_set, Validation_set, 1]
+if __name__ == "__main__":
+    # noSSO training 
+    # setup
+    random.seed(42)
+    np.random.seed(0)
+    setup_seed(20)
+    hyper_parameter = [32,50]   # [batch_size, num_epochs]
+    Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+    Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set'
+    work_condition = [1,2]
+    exp_topic = 'noSSO'
+    exp_num = 6
+    train_vali = [Learning_set, Validation_set, 3]
 
-# regular train
-X = [0.001, 64, 32, 3, 1, 0.5, 0.3, 0.8, 0.7]
-start_time1 = time.time()
-for wc in work_condition:
-    exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-    _ ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, X, wc)
-    model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
-    torch.save(train_result, model_name)
-    print("{}, PTH saved done!".format(model_name))
-end_time1 = time.time()
-train_time = end_time1-start_time1
+    # regular train
+    iX = [0.001, 32, 64, 16, 32, 32, 3, 1, 0.5, 64, 0.3, 0.7, 0.7]
+    start_time1 = time.time()
+    wc1 = []
+    wc2 = []
+    for _ in range(30):
+        for wc in work_condition:
+            exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
+            act_mse ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, iX, wc)
+            if wc == 1:
+                wc1.append(act_mse)
+            elif wc == 2:
+                wc2.append(act_mse)
+            model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
+            torch.save(train_result, model_name)
+            print("{}, PTH saved done!".format(model_name))
+        end_time1 = time.time()
+        train_time = end_time1-start_time1
 
-print("Train Finish !")
-print("Train Time = {}".format(train_time))
+        print("Train Finish !")
+        print("Train Time = {}".format(train_time))
+    
+        print(wc1)
+        print(wc2)
 

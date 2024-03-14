@@ -7,7 +7,7 @@ import random
 import torch
 
 # from src.train import Train_pipeline
-# from src.test import Test_pipeline
+from src.test import Test_pipeline
 from src.SSO_aug import SSO_train
 from src.utils import *
 
@@ -33,7 +33,7 @@ Ngen = 2
 
 # train
 # setup
-hyper_parameter = [32, 15]   # [batch_size, num_epochs]
+hyper_parameter = [32, 20]   # [batch_size, num_epochs]
 Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
 Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
 work_condition = [1,2]
@@ -71,31 +71,22 @@ print("Train Time = {}".format(train_time))
 print(result_dict)
 
 # # test
-# start_time2 = time.time()
-# for wc in work_condition:
-#     trained_pth = 'F:/git_repo/WKN_SSO/result/pth/'+exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st.pth'
-#     if wc == 1:
-#         Test_set = ['F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_3',
-#                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_4',
-#                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_5',
-#                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_6',
-#                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing1_7']
-#     elif wc == 2:
-#         Test_set = ['F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing2_3',
-#                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing2_4',
-#                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing2_5',
-#                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing2_6',
-#                     'F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing2_7']
-#     elif wc == 3:
-#         Test_set = ['F:/git_repo/WKN_SSO/viberation_dataset/Test_set/Bearing3_3']
-        
-#     for test_set in Test_set:
-#         tmp_result = []
-#         bearing_name, tmp_result = Test_pipeline(trained_pth, test_set, hyper_parameter[0], wc)
-#         output_2_csv(bearing_name, tmp_result)
-#         output_2_plot(bearing_name, tmp_result)
-# end_time2 = time.time()
-# test_time = end_time2-start_time2
+# setup
+exp_topic = 'noSSO'
+exp_num = 5
+batch_size = 32
+work_condition = [1,2]
+X = [0.001, 32, 64, 16, 32, 32, 3, 1, 0.5, 64, 0.3, 0.5, 0.5]
 
-# print("Test Finish !")
-# print("Test Time = {}".format(test_time))
+start_time2 = time.time()
+for wc in work_condition:
+    trained_pth = 'F:/git_repo/WKN_SSO/result/pth/'+exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st.pth'
+    tmp_result = []
+    bearing_name, tmp_result = Test_pipeline(trained_pth, batch_size, X, wc)
+    output_2_csv(bearing_name, tmp_result)
+    output_2_plot(bearing_name, tmp_result)
+end_time2 = time.time()
+test_time = end_time2-start_time2
+
+print("Test Finish !")
+print("Test Time = {}".format(test_time))

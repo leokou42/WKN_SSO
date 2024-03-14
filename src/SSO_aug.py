@@ -57,9 +57,7 @@ def SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, initial_sol
             while job < Nvar-1:
                 job += 1
                 rnd2 = np.random.rand()
-                stat = 0
                 if rnd2 < Cg:
-                    stat = 1
                     X[sol][job] = pX[gBest][job]
                     if X[sol][job]<random_number_range[job][0] or X[sol][job]>random_number_range[job][1]:
                         if X[sol][job] > 1:
@@ -67,7 +65,6 @@ def SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, initial_sol
                         else:
                             X[sol][job] = random_select(job, random_number_range)
                 elif rnd2 < Cp:
-                    stat = 2
                     X[sol][job] = pX[sol][job]
                     if X[sol][job] < random_number_range[job][0] or X[sol][job] > random_number_range[job][1]:
                         if X[sol][job] > 1:
@@ -75,7 +72,6 @@ def SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, initial_sol
                         else:
                             X[sol][job] = random_select(job, random_number_range)
                 elif rnd2 < Cw:
-                    stat = 3
                     X[sol][job] = X[sol-1][job]
                     if X[sol][job] < random_number_range[job][0] or X[sol][job] > random_number_range[job][1]:
                         if X[sol][job] > 1:
@@ -83,7 +79,6 @@ def SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, initial_sol
                         else:
                             X[sol][job] = random_select(job, random_number_range)
                 else:
-                    stat = 4
                     X[sol][job] = int(random_select(job, random_number_range))
                     if X[sol][job] < random_number_range[job][0] or X[sol][job] > random_number_range[job][1]:
                         if X[sol][job] > 1:
@@ -113,44 +108,56 @@ def SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, initial_sol
 
     return value_to_x_dict
 
+if __name__ == "__main__":
+    # setup
+    hyper_parameter = [32, 15]   # [batch_size, num_epochs]
+    Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+    Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
+    work_condition = [1,2]
+    exp_topic = 'SSO'
+    exp_num = 6
 
-# setup
-hyper_parameter = [32, 15]   # [batch_size, num_epochs]
-Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
-Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
-work_condition = [1,2]
-exp_topic = 'SSO'
-exp_num = 5
+    random_number_range=[(0.0001, 0.1), # learning rate     0
+                        (1, 64),       # LA kernel num     1
+                        (1, 32),       # LA kernel size    2
+                        (1, 64),       # Conv1 num         3
+                        (1, 32),       # Conv1 size        4
+                        (1, 64),       # Conv2 num         5
+                        (1, 32),       # Conv2 size        6
+                        (1, 10),       # Gru layers        7
+                        (0.01, 0.99),  # MSA dropout       8
+                        (1, 5120),     # Linear nuron nums 9
+                        (0.01, 0.99),  # dropout           10
+                        (0.5, 0.8),    # label twist_point 11
+                        (0.5, 0.8)]    # label slope       12
 
-#[learning rate, LA kernel, conv1 kernel, conv2 kernel, GRU num_layer, MSA Dropout rate, FC Dropout rate, label twist_point, label slope]
-random_number_range=[(0.0001, 0.1), (1, 64), (1, 64), (1, 32), (1, 10), (0.1, 0.99), (0.1, 0.99), (0.5, 0.8), (0.5, 0.8)]
-iX = [0.001, 64, 32, 3, 1, 0.5, 0.3, 0.6, 0.6]
-start_time = time.time()
+    iX = [0.001, 32, 64, 16, 32, 32, 3, 1, 0.5, 64, 0.3, 0.6, 0.6]
+    start_time = time.time()
 
-# SSO setup
-Cg = 0.1  #GBEST區間
-Cp = 0.3  #PBEST區間
-Cw = 0.6  #前解區間
-Nsol = 6
-Ngen = 10
+    # SSO setup
+    Cg = 0.1  #GBEST區間
+    Cp = 0.3  #PBEST區間
+    Cw = 0.6  #前解區間
+    Nsol = 6
+    Ngen = 10
 
-# train
-start_time1 = time.time()
-train_vali = [Learning_set, Validation_set, 1]
-for wc in work_condition:
-    train_detail = [train_vali, hyper_parameter, wc]
-    print("start SSO !")
-    print(train_detail)
-    exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-    all_result = SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, iX, train_detail)
-    min_key, min_value = find_min_key_value(all_result)
-    print("min_key = {} , value of {}".format(min_key, min_value))
-    csv_name = 'F:/git_repo/WKN_SSO/result/SSO_result/'+exp_topic+'_wc'+str(wc)+'_vali'+str(train_vali[2])+'_'+str(exp_num)+'st.csv'
-    SSO_2_csv(csv_name, all_result)
+    # train
+    start_time1 = time.time()
+    train_vali = [Learning_set, Validation_set, 3]
+    for wc in work_condition:
+        train_detail = [train_vali, hyper_parameter, wc]
+        print("start SSO !")
+        print(train_detail)
+        exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
+        all_result = SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, iX, train_detail)
+        min_key, min_value = find_min_key_value(all_result)
+        print("min_key = {} , value of {}".format(min_key, min_value))
+        csv_name = 'F:/git_repo/WKN_SSO/result/SSO_result/'+exp_topic+'_wc'+str(wc)+'_vali'+str(train_vali[2])+'_'+str(exp_num)+'st.csv'
+        SSO_2_csv(csv_name, all_result)
 
-end_time1 = time.time()
-train_time = end_time1-start_time1
+    end_time1 = time.time()
+    train_time = end_time1-start_time1
 
-print("Train Finish !")
-print("Train Time = {}".format(train_time))
+    print("SSO Train Finish !")
+    print("SSO Train Time = {}".format(train_time))
 

@@ -46,26 +46,26 @@ class LA_WKN_BiGRU(nn.Module):
         self.sX = sX
         super(LA_WKN_BiGRU, self).__init__()
         self.WKN = nn.Sequential(
-            Laplace_fast(out_channels=32, kernel_size=self.sX[1]),  # SSO update kernel size, original = 64
+            Laplace_fast(out_channels=self.sX[1], kernel_size=self.sX[2]),  # SSO update kernel size, original = 64
             nn.MaxPool1d(kernel_size=2, stride=2),
-            nn.Conv1d(32, 16, kernel_size=self.sX[2], padding='same'), # SSO update kernel size, original = 32
+            nn.Conv1d(self.sX[1], self.sX[3], kernel_size=self.sX[4], padding='same'), # SSO update kernel size, original = 32
             nn.MaxPool1d(kernel_size=2, stride=2),
-            nn.Conv1d(16, 32, kernel_size=self.sX[3], padding='same'), # SSO update kernel size, original = 3
+            nn.Conv1d(self.sX[3], self.sX[5], kernel_size=self.sX[6], padding='same'), # SSO update kernel size, original = 3
             nn.MaxPool1d(kernel_size=2, stride=2))
 
-        self.BiGRU = nn.GRU(input_size=32, hidden_size=8, num_layers=sX[4], bidirectional=True) #SSO update num_layers, original = 1
+        self.BiGRU = nn.GRU(input_size=self.sX[5], hidden_size=8, num_layers=sX[7], bidirectional=True) #SSO update num_layers, original = 1
 
-        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=8, batch_first=True, dropout=self.sX[5]) 
-        #SSO update num_heads, original = 8
-        #SSO update dropout rate, original = 0.5
+        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=8, batch_first=True, dropout=self.sX[8]) 
+        # SSO update num_heads, original = 8
+        # SSO update dropout rate, original = 0.5
 
         self.FC = nn.Sequential(
             nn.Linear(16, 16),
             nn.Flatten(),
-            nn.Linear(5120, 64),
+            nn.Linear(5120, self.sX[9]),
             nn.ReLU(),
-            nn.Dropout(self.sX[6]), # SSO update Dropout rate, original = 0.5
-            nn.Linear(64,1),
+            nn.Dropout(self.sX[10]), # SSO update Dropout rate, original = 0.5
+            nn.Linear(self.sX[9],1),
             nn.Sigmoid()
         )
     
