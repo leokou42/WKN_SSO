@@ -151,6 +151,8 @@ def SSO_2_csv(filename, value_to_x_dict):
         # Write data
         for score, (params, indices) in value_to_x_dict.items():
             writer.writerow([score, params, indices])
+    
+    print(filename)
 
 def setup_seed(seed):
      torch.manual_seed(seed)
@@ -160,7 +162,7 @@ def setup_seed(seed):
      torch.backends.cudnn.deterministic = True
 
 def SSO_hp_trans(iX):
-    iX[0] = iX[0]/10000
+    iX[0] = iX[0]/100000
     iX[8] = iX[8]/100
     iX[10] = iX[10]/100
     iX[11] = iX[11]/100

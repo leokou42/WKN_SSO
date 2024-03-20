@@ -17,16 +17,17 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     print(device)
 
     # hyperparameter setup
-    sX = SSO_hp_trans(sX)
+    # sX = SSO_hp_trans(iX)
     batch_size = hp[0]
     num_epochs = hp[1]
-    learning_rate = sX[0] # SSO update learning_rate, original = 0.001
+    learning_rate = sX[0]/100000 # SSO update learning_rate, original = 0.001
+    # learning_rate = 0.001 # SSO update learning_rate, original = 0.001
     Learning_set = Learning_Validation[0]
     Validation_set = Learning_Validation[1]
     Validation_type = Learning_Validation[2]
     
     # setup experiment working condition and dataset location
-    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[sX[11], sX[12]])
+    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[sX[11]/100, sX[12]/100])
     val_data = CustomDataSet(Validation_set, work_condition, transform=None, mode='train')
 
     # ===================================================================================================
@@ -59,6 +60,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     act_MSE = 0
     all_loss = []
     all_mse = []
+    early_stop = 0
     for epoch in range(num_epochs):
         model.train()
         for data, labels in train_loader:
@@ -85,15 +87,21 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
 
         average_mse = total_mse / num_samples
         act_MSE += average_mse
+        if average_mse > 0.05:
+            early_stop += 1
+        else:
+            early_stop = 0
         all_loss.append(loss.cpu().detach().numpy())
         all_mse.append(average_mse)
         print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
-        # print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation RMSE: {average_mse:.4f}')
+        if early_stop > 9:
+            print("underfitting, break")
+            break
         if average_mse < best_MSE:
             best_MSE = average_mse
             best_model = model.state_dict()
-    
-    act_MSE = act_MSE / num_epochs
+
+    act_MSE = act_MSE / (epoch+1)
     print("Process MSE = {}".format(act_MSE))
     # print("Process RMSE = {}".format(act_MSE**2))
     Lossplot = 'loss & MSE'+str(work_condition)
@@ -116,7 +124,8 @@ if __name__ == "__main__":
     train_vali = [Learning_set, Validation_set, 3]
 
     # regular train
-    iX = [10, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 70, 70]
+    iX = [500, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 77, 83]
+    # iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60]
     start_time1 = time.time()
     wc1 = []
     wc2 = []
