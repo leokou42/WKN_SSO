@@ -7,12 +7,13 @@ from torch.utils.data import Dataset
 from utils import *
 
 class CustomDataSet(Dataset):
-    def __init__(self, root_dir, work_condition,
-                 transform=None, mode='train'):
+    def __init__(self, root_dir, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[0.6, 0.6]):
         self.root_dir = root_dir
         self.work_condition = work_condition
         self.transform = transform
         self.mode = mode
+        self.label_style = label_style
+        self.two_stage_hp = two_stage_hp
         self.file_paths = self.get_file_paths()
 
     def get_file_paths(self):
@@ -53,7 +54,7 @@ class CustomDataSet(Dataset):
         #     print(inputs.shape)
 
         if self.mode == 'train':
-            label = get_health_index(self.root_dir, file_path)
+            label = get_health_index(self.root_dir, file_path, self.label_style, self.two_stage_hp)
             label = torch.tensor(label, dtype=torch.float32)
 
             if self.transform:

@@ -3,6 +3,9 @@ import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+import random
+import csv
+import torch
 
 def min_max_scale(data):
     min_val = np.min(data)
@@ -15,7 +18,16 @@ def min_max_scale(data):
 
     return scaled_data
 
-def get_health_index(root_dir, file_path):
+def two_stage_hi(twist_point, slope, l):
+    hi1_length = int(l * slope)
+    hi2_length = l - hi1_length  # 確保總長度等於 l
+    hi1 = np.linspace(1, twist_point, hi1_length)
+    hi2 = np.linspace(twist_point, 0, hi2_length)
+    hi = np.concatenate([hi1, hi2])
+
+    return hi
+
+def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
     # bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
     # file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
     bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
@@ -25,8 +37,10 @@ def get_health_index(root_dir, file_path):
     for filename in os.listdir(bearing_name):
         if filename.endswith('.csv'):
             folder_tot += 1
-        
-    hi = np.linspace(1,0,folder_tot)
+    if hi_type == 1:
+        hi = np.linspace(1,0,folder_tot)
+    elif hi_type == 2:
+        hi = two_stage_hi(two_stage_hp[0],two_stage_hp[1], folder_tot)
 
     return hi[file_num-1]
 
@@ -99,4 +113,59 @@ def loss_2_plot(file_name, loss, mse, show_pic = False):
     if show_pic == True:
         plt.show()
 
-    print("{} picture saved".format(file_name)) 
+    print("{} picture saved".format(file_name))
+
+# 生成隨機解組合
+def generate_random_numbers(number_range):
+    random_numbers = []
+    for min_value, max_value in number_range:
+        random_value = random.uniform(min_value, max_value)
+        if random_value > 1:
+          random_value = int(random_value)
+        random_numbers.append(random_value)
+
+    return random_numbers
+
+# 生成隨機數
+def random_select(n, random_number_range):
+    return random.uniform(random_number_range[n][0],random_number_range[n][1])
+
+def find_min_key_value(dictionary):
+    if not dictionary:
+        return None, None  # 如果字典是空的，返回None
+
+    min_key = min(dictionary.keys())
+    min_value = dictionary[min_key]
+    
+    return min_key, min_value
+
+def SSO_2_csv(filename, value_to_x_dict):
+    header = ['score', 'params', 'indices']
+    # Writing to CSV
+    with open(filename, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        
+        # Write header
+        writer.writerow(header)
+        
+        # Write data
+        for score, (params, indices) in value_to_x_dict.items():
+            writer.writerow([score, params, indices])
+    
+    print(filename)
+
+def setup_seed(seed):
+     torch.manual_seed(seed)
+     torch.cuda.manual_seed_all(seed)
+     np.random.seed(seed)
+     random.seed(seed)
+     torch.backends.cudnn.deterministic = True
+
+def SSO_hp_trans(iX):
+    iX[0] = iX[0]/100000
+    iX[8] = iX[8]/100
+    iX[10] = iX[10]/100
+    iX[11] = iX[11]/100
+    iX[12] = iX[12]/100
+
+    return iX

@@ -29,7 +29,7 @@ class CNN_GRU(nn.Module):
     
     def forward(self, x):
         x = x.unsqueeze(1)
-        x = self.WKN(x)    
+        x = self.CNN(x)    
         # print(x.shape)    
         x = x.view(32, 320, 32)
         x,_ = self.BiGRU(x)
