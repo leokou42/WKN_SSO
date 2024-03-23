@@ -85,7 +85,6 @@ class LA_WKN_BiGRU(nn.Module):
         x = x.squeeze()
         return x
 
-
 '''
 # test
 def SSO_hp_trans(iX):
@@ -107,4 +106,3 @@ testo = model(testi)
 
 print("testo out: {}".format(testo.shape))
 '''
-
