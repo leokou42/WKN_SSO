@@ -119,11 +119,11 @@ if __name__ == "__main__":
 
     random_number_range=[(1, 1000),     # learning rate     0
                         (1, 64),        # LA kernel num     1
-                        (1, 128),       # LA kernel size    2
+                        (2, 128),       # LA kernel size    2
                         (1, 64),        # Conv1 num         3
-                        (1, 32),        # Conv1 size        4
+                        (2, 32),        # Conv1 size        4
                         (1, 64),        # Conv2 num         5
-                        (1, 32),        # Conv2 size        6
+                        (2, 32),        # Conv2 size        6
                         (1, 10),        # Gru layers        7
                         (1, 99),        # MSA dropout       8
                         (1, 5120),      # Linear nuron nums 9
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     # train
     start_time1 = time.time()
     train_vali = [Learning_set, Validation_set, 3]
-    c = 0
+    c = 3
     for wc in work_condition:
         train_detail = [train_vali, hyper_parameter, wc]
         print("start SSO !")
