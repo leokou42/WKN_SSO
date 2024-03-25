@@ -22,19 +22,19 @@ class GRU(nn.Module):
         )
     
     def forward(self, x):
-        print("in: {}".format(x.shape))
-        print("CNN out: {}".format(x.shape))
+        # print("in: {}".format(x.shape))
         x = x.permute(0, 2, 1)
         x,_ = self.gru(x)
-        print("GRU out: {}".format(x.shape))
+        # print("GRU out: {}".format(x.shape))
         x = self.FC(x)
         x = x.squeeze()
         return x
 
-# test
-testi = torch.randn(32, 1, 2560)
-model = GRU()
+if __name__ == "__main__":
+    # test
+    testi = torch.randn(32, 1, 2560)
+    model = GRU()
 
-testo = model(testi)
+    testo = model(testi)
 
-print("testo out: {}".format(testo.shape))
+    print("testo out: {}".format(testo.shape))

@@ -139,6 +139,16 @@ def find_min_key_value(dictionary):
     
     return min_key, min_value
 
+def train_2_csv(csv_file, list1, list2):
+    csv_file = csv_file + '.csv'
+    with open(csv_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['List 1', 'List 2'])
+        for item1, item2 in zip(list1, list2):
+            writer.writerow([item1, item2])
+
+    print(f'資料已寫入到 {csv_file} 檔案中。')
+
 def SSO_2_csv(filename, value_to_x_dict):
     header = ['score', 'params', 'indices']
     # Writing to CSV

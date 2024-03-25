@@ -58,7 +58,11 @@ class LA_WKN_BiGRU_MSA(nn.Module):
 
         self.BiGRU = nn.GRU(input_size=self.sX[5], hidden_size=8, num_layers=sX[7], bidirectional=True) # x_7, SSO update num_layers, original = 1
 
+        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=8, batch_first=True, dropout=self.sX[8]/100) 
+        # x_8, SSO update dropout rate, original = 0.5
+
         self.FC = nn.Sequential(
+            nn.Linear(16, 16),
             nn.Flatten(),
             nn.Linear(5120, self.sX[9]),    # x_9, SSO update nuneral num, original = 64
             nn.ReLU(),
@@ -74,6 +78,8 @@ class LA_WKN_BiGRU_MSA(nn.Module):
         x = x.permute(0, 2, 1)
         x,_ = self.BiGRU(x)
         # print("GRU out: {}".format(x.shape))
+        x,_ = self.MSA(x,x,x)
+        # print("MSA out: {}".format(x.shape))
         x = self.FC(x)
         x = x.squeeze()
         return x
