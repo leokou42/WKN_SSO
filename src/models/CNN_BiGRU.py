@@ -28,12 +28,12 @@ class CNN_BiGRU(nn.Module):
         )
     
     def forward(self, x):
-        print("in: {}".format(x.shape))
+        # print("in: {}".format(x.shape))
         x = self.CNN(x)    
-        print("CNN out: {}".format(x.shape))
+        # print("CNN out: {}".format(x.shape))
         x = x.permute(0, 2, 1)
         x,_ = self.BiGRU(x)
-        print("GRU out: {}".format(x.shape))
+        # print("GRU out: {}".format(x.shape))
         x = self.FC(x)
         x = x.squeeze()
         return x

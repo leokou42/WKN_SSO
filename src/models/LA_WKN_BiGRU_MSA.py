@@ -4,11 +4,7 @@ import torch
 from math import pi
 import torch.nn.functional as F
 
-def Laplace(p, A, ep, tal, f):
-    # A = 0.08
-    # ep = 0.03
-    # tal = 0.1
-    # f = 50
+def Laplace(p, A=0.08, ep=0.03, tal=0.1, f=50):
     w = 2 * pi * f
     q = torch.tensor(1 - pow(ep, 2))
     
@@ -40,11 +36,11 @@ class Laplace_fast(nn.Module):
         # waveforms = waveforms.squeeze()
         return F.conv1d(waveforms, self.filters, stride=1, padding='same', dilation=1, bias=None, groups=1)
 
-class LA_WKN_BiGRU(nn.Module):
+class LA_WKN_BiGRU_MSA(nn.Module):
 
     def __init__(self, sX):
         self.sX = sX
-        super(LA_WKN_BiGRU, self).__init__()
+        super(LA_WKN_BiGRU_MSA, self).__init__()
         self.WKN = nn.Sequential(
             Laplace_fast(out_channels=self.sX[1], kernel_size=self.sX[2]),  # x_1, SSO update output channel, original = 32
                                                                             # x_2, SSO update kernel size, original = 64
@@ -58,9 +54,13 @@ class LA_WKN_BiGRU(nn.Module):
 
         self.BiGRU = nn.GRU(input_size=self.sX[5], hidden_size=8, num_layers=sX[7], bidirectional=True) # x_7, SSO update num_layers, original = 1
 
+        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=8, batch_first=True, dropout=self.sX[8]/100) 
+        # x_8, SSO update dropout rate, original = 0.5
+
         self.FC = nn.Sequential(
+            nn.Linear(16, 16),
             nn.Flatten(),
-            nn.Linear(5120, self.sX[9]),    # x_9, SSO update nuneral num, original = 64
+            nn.Linear(5120, self.sX[9]),        # x_9, SSO update nuneral num, original = 64
             nn.ReLU(),
             nn.Dropout(self.sX[10]/100),        # x_10, SSO update Dropout rate, original = 0.3
             nn.Linear(self.sX[9],1),
@@ -74,6 +74,8 @@ class LA_WKN_BiGRU(nn.Module):
         x = x.permute(0, 2, 1)
         x,_ = self.BiGRU(x)
         # print("GRU out: {}".format(x.shape))
+        x,_ = self.MSA(x,x,x)
+        # print("MSA out: {}".format(x.shape))
         x = self.FC(x)
         x = x.squeeze()
         return x
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     testi = torch.randn(32, 1, 2560).cuda()
     X = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 50, 50]
     sX = SSO_hp_trans(X)
-    model = LA_WKN_BiGRU(sX).cuda()
+    model = LA_WKN_BiGRU_MSA(sX).cuda()
 
     testo = model(testi)
 

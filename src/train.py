@@ -8,7 +8,7 @@ import time
 import math
 
 from utils import *
-from models.CNN_RNN import CNN_RNN
+from models.CNN_GRU import CNN_GRU
 from dataset_loader import CustomDataSet
 
 def Train_pipeline(Learning_Validation, hp, sX, work_condition):
@@ -50,7 +50,8 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
     # model selection
-    model = CNN_RNN().to(device)
+    model = CNN_GRU().to(device)
+    # model = ML_WKN_BiGRU_MSA(sX).to(device)
 
     criterion = nn.MSELoss() 
     optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
@@ -116,7 +117,7 @@ if __name__ == "__main__":
     random.seed(42)
     np.random.seed(0)
     setup_seed(20)
-    hyper_parameter = [32,50]   # [batch_size, num_epochs]
+    hyper_parameter = [32,30]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
     work_condition = [1,2]
@@ -130,7 +131,7 @@ if __name__ == "__main__":
     start_time1 = time.time()
     wc1 = []
     wc2 = []
-    for _ in range(30):
+    for term in range(30):
         for wc in work_condition:
             exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
             act_mse ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, iX, wc)
@@ -146,10 +147,11 @@ if __name__ == "__main__":
 
         print("Train Finish !")
         print("Train Time = {}".format(train_time))
-    
+
+        print(f'\nEpoch {term + 1}/30')
         print(wc1)
         print(wc2)
     
-    csv_name = 'CNN_RNN'
+    csv_name = 'CNN_GRU'
     train_2_csv(csv_name, wc1, wc2)
 
