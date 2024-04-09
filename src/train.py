@@ -8,7 +8,7 @@ import time
 import math
 
 from utils import *
-from models.CNN_GRU import CNN_GRU
+from models.ML_WKN_BiGRU_MSA import ML_WKN_BiGRU_MSA
 from dataset_loader import CustomDataSet
 
 def Train_pipeline(Learning_Validation, hp, sX, work_condition):
@@ -27,7 +27,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     Validation_type = Learning_Validation[2]
     
     # setup experiment working condition and dataset location
-    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100])
+    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[sX[11]/100, sX[12]/100])
     val_data = CustomDataSet(Validation_set, work_condition, transform=None, mode='train')
 
     # ===================================================================================================
@@ -50,8 +50,8 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
     # model selection
-    model = CNN_GRU().to(device)
-    # model = ML_WKN_BiGRU_MSA(sX).to(device)
+    # model = CNN_BiGRU().to(device)
+    model = ML_WKN_BiGRU_MSA(sX).to(device)
 
     criterion = nn.MSELoss() 
     optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
     # regular train
     # iX = [500, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 77, 83]
-    iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 50, 50]
+    iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 70, 70]
     start_time1 = time.time()
     wc1 = []
     wc2 = []
@@ -149,9 +149,9 @@ if __name__ == "__main__":
         print("Train Time = {}".format(train_time))
 
         print(f'\nEpoch {term + 1}/30')
-        print(wc1)
-        print(wc2)
+        print(wc1, sum(wc1)/(term+1))
+        print(wc2, sum(wc2)/(term+1))
     
-    csv_name = 'CNN_GRU'
+    csv_name = 'ML_WKN_BiGRU_MSA_0.6/0.6'
     train_2_csv(csv_name, wc1, wc2)
 

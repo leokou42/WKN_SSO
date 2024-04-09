@@ -12,7 +12,6 @@ def min_max_scale(data):
     max_val = np.max(data)
     # scaler[0~1]
     # scaled_data = (data - min_val) / (max_val - min_val) 
-    
     # scaler[-1~1]
     scaled_data = -1 + 2 * (data - min_val) / (max_val - min_val)
 
@@ -28,8 +27,6 @@ def two_stage_hi(twist_point, slope, l):
     return hi
 
 def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
-    # bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
-    # file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
     bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
     file_num = int(file_path.split('\\')[-1].split('_')[-1].split('.')[0])
 

@@ -40,11 +40,11 @@ class Laplace_fast(nn.Module):
         # waveforms = waveforms.squeeze()
         return F.conv1d(waveforms, self.filters, stride=1, padding='same', dilation=1, bias=None, groups=1)
 
-class LA_WKN_BiGRU_MSA(nn.Module):
+class LA_WKN_GRU(nn.Module):
 
     def __init__(self, sX):
         self.sX = sX
-        super(LA_WKN_BiGRU_MSA, self).__init__()
+        super(LA_WKN_GRU, self).__init__()
         self.WKN = nn.Sequential(
             Laplace_fast(out_channels=self.sX[1], kernel_size=self.sX[2]),  # x_1, SSO update output channel, original = 32
                                                                             # x_2, SSO update kernel size, original = 64
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     testi = torch.randn(32, 1, 2560).cuda()
     X = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 50, 50]
     sX = SSO_hp_trans(X)
-    model = LA_WKN_BiGRU_MSA(sX).cuda()
+    model = LA_WKN_GRU(sX).cuda()
 
     testo = model(testi)
 

@@ -56,14 +56,12 @@ class CustomDataSet(Dataset):
         if self.mode == 'train':
             label = get_health_index(self.root_dir, file_path, self.label_style, self.two_stage_hp)
             label = torch.tensor(label, dtype=torch.float32)
-
             if self.transform:
                 inputs = self.transform(inputs)
 
             return inputs, label
         
         elif self.mode == 'test':
-
             if self.transform:
                 inputs = self.transform(inputs)
             

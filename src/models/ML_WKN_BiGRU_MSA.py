@@ -58,15 +58,15 @@ class ML_WKN_BiGRU_MSA(nn.Module):
                                                                                         # x_6, SSO update kernel size, original = 3
             nn.MaxPool1d(kernel_size=2, stride=2))
 
-        self.BiGRU = nn.GRU(input_size=self.sX[5], hidden_size=8, num_layers=sX[7], bidirectional=True) # x_7, SSO update num_layers, original = 1
+        self.BiGRU = nn.GRU(input_size=self.sX[5], hidden_size=8, num_layers=sX[7], bidirectional=False) # x_7, SSO update num_layers, original = 1
 
-        self.MSA = nn.MultiheadAttention(embed_dim=16, num_heads=8, batch_first=True, dropout=self.sX[8]/100) 
+        self.MSA = nn.MultiheadAttention(embed_dim=8, num_heads=4, batch_first=True, dropout=self.sX[8]/100) 
         # x_8, SSO update dropout rate, original = 0.5
 
         self.FC = nn.Sequential(
-            nn.Linear(16, 16),
+            nn.Linear(8, 8),
             nn.Flatten(),
-            nn.Linear(5120, self.sX[9]),        # x_9, SSO update nuneral num, original = 64
+            nn.Linear(2560, self.sX[9]),        # x_9, SSO update nuneral num, original = 64
             nn.ReLU(),
             nn.Dropout(self.sX[10]/100),        # x_10, SSO update Dropout rate, original = 0.3
             nn.Linear(self.sX[9],1),

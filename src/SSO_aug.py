@@ -114,7 +114,7 @@ if __name__ == "__main__":
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
     work_condition = [1]
-    exp_topic = 'SSO'
+    exp_topic = 'SSO_ML'
     exp_num = 6
 
     random_number_range=[(1, 1000),     # learning rate     0
