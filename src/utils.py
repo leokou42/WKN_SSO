@@ -18,20 +18,27 @@ def min_max_scale(data):
 
     return scaled_data
 
-def two_stage_hi(twist_point, slope, l):
+def two_stage_hi(twist_point, slope, l, draw=False):
     hi1_length = int(l * slope)
     hi2_length = l - hi1_length  # 確保總長度等於 l
     hi1 = np.linspace(1, twist_point, hi1_length)
     hi2 = np.linspace(twist_point, 0, hi2_length)
     hi = np.concatenate([hi1, hi2])
+    # 繪製圖表
+    if draw == True:
+        plt.plot(hi)
+        plt.xlabel('Time')
+        plt.ylabel('Health Index')
+        plt.title('Plot of HI')
+        plt.show()
 
     return hi
 
 def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
-    # bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
-    # file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
-    bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
-    file_num = int(file_path.split('\\')[-1].split('_')[-1].split('.')[0])
+    bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
+    file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
+    # bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
+    # file_num = int(file_path.split('\\')[-1].split('_')[-1].split('.')[0])
 
     folder_tot = 0
     for filename in os.listdir(bearing_name):

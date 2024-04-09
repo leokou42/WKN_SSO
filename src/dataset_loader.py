@@ -45,11 +45,12 @@ class CustomDataSet(Dataset):
 
     def __getitem__(self, index):
         file_path = self.file_paths[index]
-        data = pd.read_csv(file_path, header=None, names=['hour', 'minute', 'second', 'microsecond', 'horiz accel', 'vert accel'])
-        
+        data = pd.read_csv(file_path,
+                           header=None,
+                           names=['hour', 'minute', 'second', 'microsecond', 'horiz accel', 'vert accel'])
         inputs = data['horiz accel'].values.astype(float)
         inputs = min_max_scale(inputs).reshape(1, -1)
-        inputs = torch.from_numpy(inputs.astype(np.float32)).cuda()
+        inputs = torch.from_numpy(inputs.astype(np.float32))
         # if inputs.size() != torch.Size([1, 2560]):
         #     print(inputs.shape)
 

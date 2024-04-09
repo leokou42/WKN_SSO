@@ -31,14 +31,14 @@ class Morlet_fast(nn.Module):
                                          steps=int((self.kernel_size / 2)))
         time_disc_left = torch.linspace(-(self.kernel_size / 2) + 1, -1,
                                         steps=int((self.kernel_size / 2)))
-        p1 = time_disc_right.cuda() - self.b_.cuda() / self.a_.cuda()
-        p2 = time_disc_left.cuda() - self.b_.cuda() / self.a_.cuda()
+        p1 = time_disc_right - self.b_ / self.a_
+        p2 = time_disc_left - self.b_ / self.a_
 
         Morlet_right = Morlet(p1)
         Morlet_left = Morlet(p2)
 
         Morlet_filter = torch.cat([Morlet_left, Morlet_right], dim=1)  # 40x1x250
-        self.filters = (Morlet_filter).view(self.out_channels, 1, self.kernel_size).cuda()
+        self.filters = (Morlet_filter).view(self.out_channels, 1, self.kernel_size)
 
         return F.conv1d(waveforms, self.filters, stride=1, padding='same', dilation=1, bias=None, groups=1)
 
@@ -91,10 +91,10 @@ if __name__ == "__main__":
 
         return iX
 
-    testi = torch.randn(32, 1, 2560).cuda()
+    testi = torch.randn(32, 1, 2560)
     X = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 50, 50]
     sX = SSO_hp_trans(X)
-    model = ML_WKN_GRU(sX).cuda()
+    model = ML_WKN_GRU(sX)
 
     testo = model(testi)
 
