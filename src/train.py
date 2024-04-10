@@ -12,6 +12,10 @@ from models.ML_WKN_BiGRU_MSA import ML_WKN_BiGRU_MSA
 from dataset_loader import CustomDataSet
 
 def Train_pipeline(Learning_Validation, hp, sX, work_condition):
+    # random seed setup
+    random.seed(42)
+    np.random.seed(0)
+    setup_seed(20)
     # access to cuda
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -114,9 +118,6 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
 if __name__ == "__main__":
     # noSSO training 
     # setup
-    random.seed(42)
-    np.random.seed(0)
-    setup_seed(20)
     hyper_parameter = [32,30]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
