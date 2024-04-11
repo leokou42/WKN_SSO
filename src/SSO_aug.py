@@ -52,7 +52,6 @@ def SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, initial_sol
     for gen in range(1, Ngen+1):
         for sol in range(Nsol):
             job=-1
-
             # SSO 
             while job < Nvar-1:
                 job += 1
