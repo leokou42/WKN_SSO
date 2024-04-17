@@ -24,4 +24,10 @@ def two_stage_train(Learning_Validation, hp, sX, work_condition):
     # sX = SSO_hp_trans(iX)
     batch_size = hp[0]
     num_epochs = hp[1]
+    Learning_set = Learning_Validation[0]
+    Validation_set = Learning_Validation[1]
+    Validation_type = Learning_Validation[2]
     learning_rate = sX[0]/100000 # SSO update learning_rate, original = 0.001
+    twist_point = sX[11]/100
+    slope = sX[12]/100
+

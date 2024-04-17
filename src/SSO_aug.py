@@ -115,7 +115,7 @@ if __name__ == "__main__":
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
     work_condition = [1]
     exp_topic = 'SSO_ML'
-    exp_num = 6
+    exp_num = 4
 
     random_number_range=[(1, 1000),     # learning rate     0
                         (1, 64),        # LA kernel num     1
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     # train
     start_time1 = time.time()
     train_vali = [Learning_set, Validation_set, 3]
-    c = 3
+    c = 0
     for wc in work_condition:
         train_detail = [train_vali, hyper_parameter, wc]
         print("start SSO !")
@@ -153,7 +153,7 @@ if __name__ == "__main__":
         all_result = SSO_train(exp_name, Cg[c], Cp[c], Cw[c], Nsol, Ngen, random_number_range, iX, train_detail)
         min_key, min_value = find_min_key_value(all_result)
         print("min_key = {} , value of {}".format(min_key, min_value))
-        csv_name = 'F:/git_repo/WKN_SSO/result/SSO_result/'+exp_topic+'_wc'+str(wc)+'_vali'+str(train_vali[2])+'_'+'SSOHP_setup_'+str(c+1)+'st.csv'
+        csv_name = 'F:/git_repo/WKN_SSO/result/SSO_result/'+exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'+'_vali'+str(train_vali[2])+'_'+'SSOHP_setup_'+str(c+1)+'st.csv'
         print(all_result)
         SSO_2_csv(csv_name, all_result)
 
