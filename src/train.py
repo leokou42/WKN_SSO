@@ -8,7 +8,7 @@ import time
 import math
 
 from utils import *
-from models.LA_WKN_BiGRU import LA_WKN_BiGRU
+from models.ML_WKN_BiGRU_MSA import ML_WKN_BiGRU_MSA
 from dataset_loader import CustomDataSet
 
 def Train_pipeline(Learning_Validation, hp, sX, work_condition):
@@ -49,12 +49,14 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
-    model = LA_WKN_BiGRU(sX).to(device)
+    # model selection
+    # model = CNN_BiGRU().to(device)
+    model = ML_WKN_BiGRU_MSA(sX).to(device)
 
     criterion = nn.MSELoss() 
     optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 
-    print(sX)
+    # print(sX)
     # 訓練模型
     best_MSE = 100
     act_MSE = 0
@@ -94,9 +96,9 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
         all_loss.append(loss.cpu().detach().numpy())
         all_mse.append(average_mse)
         print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
-        if early_stop > 9:
-            print("underfitting, break")
-            break
+        # if early_stop > 9:
+        #     print("underfitting, break")
+        #     break
         if average_mse < best_MSE:
             best_MSE = average_mse
             best_model = model.state_dict()
@@ -104,32 +106,33 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     act_MSE = act_MSE / (epoch+1)
     print("Process MSE = {}".format(act_MSE))
     # print("Process RMSE = {}".format(act_MSE**2))
-    Lossplot = 'loss & MSE'+str(work_condition)
-    loss_2_plot(Lossplot, all_loss, all_mse)
+    # Lossplot = 'loss & MSE'+str(work_condition)
+    # loss_2_plot(Lossplot, all_loss, all_mse)
     
     return act_MSE, best_MSE, best_model
 
 if __name__ == "__main__":
     # noSSO training 
     # setup
+    # random seed setup
     random.seed(42)
     np.random.seed(0)
     setup_seed(20)
-    hyper_parameter = [32,50]   # [batch_size, num_epochs]
+    hyper_parameter = [32,30]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
-    Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set'
+    Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
     work_condition = [1,2]
     exp_topic = 'noSSO'
     exp_num = 6
     train_vali = [Learning_set, Validation_set, 3]
 
     # regular train
-    iX = [500, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 77, 83]
-    # iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60]
+    # iX = [500, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 77, 83]
+    iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 70, 70]
     start_time1 = time.time()
     wc1 = []
     wc2 = []
-    for _ in range(30):
+    for term in range(30):
         for wc in work_condition:
             exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
             act_mse ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, iX, wc)
@@ -145,7 +148,11 @@ if __name__ == "__main__":
 
         print("Train Finish !")
         print("Train Time = {}".format(train_time))
+
+        print(f'\nEpoch {term + 1}/30')
+        print(wc1, sum(wc1)/(term+1))
+        print(wc2, sum(wc2)/(term+1))
     
-        print(wc1)
-        print(wc2)
+    csv_name = 'ML_WKN_BiGRU_MSA_0.6/0.6'
+    train_2_csv(csv_name, wc1, wc2)
 

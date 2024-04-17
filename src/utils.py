@@ -12,31 +12,41 @@ def min_max_scale(data):
     max_val = np.max(data)
     # scaler[0~1]
     # scaled_data = (data - min_val) / (max_val - min_val) 
-    
     # scaler[-1~1]
     scaled_data = -1 + 2 * (data - min_val) / (max_val - min_val)
 
     return scaled_data
 
-def two_stage_hi(twist_point, slope, l):
+def two_stage_hi(twist_point, slope, l, draw=False):
     hi1_length = int(l * slope)
     hi2_length = l - hi1_length  # 確保總長度等於 l
     hi1 = np.linspace(1, twist_point, hi1_length)
     hi2 = np.linspace(twist_point, 0, hi2_length)
     hi = np.concatenate([hi1, hi2])
 
+    if draw == 1:
+        plt.plot(hi)
+        plt.xlabel('Time')
+        plt.ylabel('Health Index')
+        plt.title('Plot of HI')
+        plt.show
+
     return hi
 
-def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
-    # bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
-    # file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
+def folder_total_len(root_dir, file_path):
     bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
-    file_num = int(file_path.split('\\')[-1].split('_')[-1].split('.')[0])
 
-    folder_tot = 0
+    folder_total = 0
     for filename in os.listdir(bearing_name):
         if filename.endswith('.csv'):
-            folder_tot += 1
+            folder_total += 1
+    
+    return folder_total
+
+def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
+    folder_tot = folder_total_len(root_dir, file_path)
+    file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
+
     if hi_type == 1:
         hi = np.linspace(1,0,folder_tot)
     elif hi_type == 2:
@@ -138,6 +148,16 @@ def find_min_key_value(dictionary):
     min_value = dictionary[min_key]
     
     return min_key, min_value
+
+def train_2_csv(csv_file, list1, list2):
+    csv_file = csv_file + '.csv'
+    with open(csv_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['List 1', 'List 2'])
+        for item1, item2 in zip(list1, list2):
+            writer.writerow([item1, item2])
+
+    print(f'資料已寫入到 {csv_file} 檔案中。')
 
 def SSO_2_csv(filename, value_to_x_dict):
     header = ['score', 'params', 'indices']
