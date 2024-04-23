@@ -8,7 +8,7 @@ import time
 import math
 
 from utils import *
-from models.ML_WKN_GRU import ML_WKN_GRU
+from models.ML_WKN_BiGRU_MSA import ML_WKN_BiGRU_MSA
 from dataset_loader import CustomDataSet
 
 def Train_pipeline(Learning_Validation, hp, sX, work_condition):
@@ -55,7 +55,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
 
     # model selection
     # model = CNN_GRU().to(device)
-    model = ML_WKN_GRU(sX).to(device)
+    model = ML_WKN_BiGRU_MSA(sX).to(device)
 
     criterion = nn.MSELoss() 
     optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)

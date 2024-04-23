@@ -34,11 +34,18 @@ def two_stage_hi(twist_point, slope, l, draw=False):
 
     return hi
 
+def folder_total_len(folder_path):
+    folder_total = 0
+    if os.path.isdir(folder_path):
+        for filename in os.listdir(folder_path):
+            if filename.endswith('.csv'):
+                folder_total += 1
+    
+    return folder_total
+
 def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
     bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
     file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
-    # bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
-    # file_num = int(file_path.split('\\')[-1].split('_')[-1].split('.')[0])
 
     folder_tot = 0
     for filename in os.listdir(bearing_name):

@@ -6,15 +6,16 @@ import torch
 from torch.utils.data import Dataset
 from utils import *
 
-class CustomDataSet(Dataset):
-    def __init__(self, root_dir, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[0.5, 0.5]):
+class CustomDataSet_2stage(Dataset):
+    def __init__(self, root_dir, work_condition, acq_part, transform=None, mode='train', label_style=2, two_stage_hp=[0.8, 0.7]):
         self.root_dir = root_dir
         self.work_condition = work_condition
+        self.acq_part = acq_part
         self.transform = transform
         self.mode = mode
         self.label_style = label_style
         self.two_stage_hp = two_stage_hp
-        self.file_paths = self.get_file_paths()
+        self.file_paths = self.get_file_paths() 
 
     def get_file_paths(self):
         file_paths = []
@@ -24,12 +25,22 @@ class CustomDataSet(Dataset):
             for folder in os.listdir(self.root_dir):
                 if wk in folder:
                     folder_path = os.path.join(self.root_dir, folder)
+                    folder_tot = folder_total_len(folder_path)
+                    sep_point = int(folder_tot * self.two_stage_hp[1])
+
                     if os.path.isdir(folder_path):
                         for filename in os.listdir(folder_path):
                             if filename.endswith('.csv'):
                                 pathes = os.path.join(folder_path, filename)
-                                pathes = os.path.normpath(pathes)
-                                file_paths.append(pathes)
+                                pathes_num = int(pathes.split('/')[-1].split('.')[-2].split('_')[-1])
+                                if self.acq_part == 1:
+                                    if pathes_num <= sep_point:
+                                        pathes = os.path.normpath(pathes)
+                                        file_paths.append(pathes)
+                                if self.acq_part == 2:
+                                    if pathes_num > sep_point:
+                                        pathes = os.path.normpath(pathes)
+                                        file_paths.append(pathes)
         
         elif self.mode == 'test':
             for files in os.listdir(self.root_dir):
@@ -41,8 +52,7 @@ class CustomDataSet(Dataset):
                         file_paths.append(pathes)
 
         return file_paths
-
-
+    
     def __getitem__(self, index):
         file_path = self.file_paths[index]
         data = pd.read_csv(file_path,
@@ -61,11 +71,10 @@ class CustomDataSet(Dataset):
 
         if self.mode == 'train':
             label = get_health_index(self.root_dir, file_path, self.label_style, self.two_stage_hp)
-            label = torch.tensor(label, dtype=torch.float32)
 
             if self.transform:
                 inputs = self.transform(inputs)
-
+            
             return inputs, label
         
         elif self.mode == 'test':
@@ -78,12 +87,3 @@ class CustomDataSet(Dataset):
         
     def __len__(self):
         return len(self.file_paths)
-
-if __name__ == "__main__":
-    print('go')
-    Learning_set = '/Users/yentsokuo/git_repo/WKN_SSO/viberation_dataset/Learning_set'
-    Validation_set = '/Users/yentsokuo/git_repo/WKN_SSO/viberation_dataset/Validation_set'
-    work_condition = 1
-    train_vali = [Learning_set, Validation_set, 3]
-    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100])
-    print(train_data)
