@@ -35,6 +35,7 @@ def two_stage_hi(twist_point, slope, l, draw=False):
 
 def folder_total_len(root_dir, file_path):
     bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
+    # bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
 
     folder_total = 0
     for filename in os.listdir(bearing_name):
