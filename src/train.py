@@ -120,7 +120,7 @@ if __name__ == "__main__":
     # setup
     hyper_parameter = [32,30]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
-    Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+    Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
     work_condition = [1,2]
     exp_topic = 'noSSO'
     exp_num = 6
@@ -150,9 +150,9 @@ if __name__ == "__main__":
         print("Train Time = {}".format(train_time))
 
         print(f'\nEpoch {term + 1}/30')
-        print(wc1)
-        print(wc2)
+        print(wc1, sum(wc1)/(term+1))                                                                                           |          print(wc1)
+        print(wc2, sum(wc2)/(term+1)) 
     
-    csv_name = 'ML_WKN_GRU'
+    csv_name = 'ML_WKN_BiGRU_MSA_6060'
     train_2_csv(csv_name, wc1, wc2)
 
