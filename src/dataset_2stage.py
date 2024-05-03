@@ -83,7 +83,19 @@ class CustomDataSet_2stage(Dataset):
                 inputs = self.transform(inputs)
             
             return inputs
-
         
     def __len__(self):
         return len(self.file_paths)
+    
+
+if __name__ == "__main__":
+    print('go')
+    Learning_set = '/Users/yentsokuo/git_repo/WKN_SSO/viberation_dataset/Learning_set'
+    Validation_set = '/Users/yentsokuo/git_repo/WKN_SSO/viberation_dataset/Validation_set'
+    wc = 1
+    acq = 1
+    train_vali = [Learning_set, Validation_set, 3]
+    train_data = CustomDataSet_2stage(Validation_set, work_condition=wc, acq_part=acq)
+    print(len(train_data))
+    for i in range(5):
+        print(train_data[i])

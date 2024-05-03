@@ -85,5 +85,7 @@ if __name__ == "__main__":
     Validation_set = '/Users/yentsokuo/git_repo/WKN_SSO/viberation_dataset/Validation_set'
     work_condition = 1
     train_vali = [Learning_set, Validation_set, 3]
-    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100])
-    print(train_data)
+    train_data = CustomDataSet(Learning_set, work_condition)
+    print(len(train_data))
+    for i in range(5):
+        print(train_data[i])
