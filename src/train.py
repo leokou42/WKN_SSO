@@ -119,8 +119,8 @@ if __name__ == "__main__":
     # noSSO training 
     # setup
     hyper_parameter = [32,30]   # [batch_size, num_epochs]
-    Learning_set = '/Users/yentsokuo/git_repo/WKN_SSO/viberation_dataset/Learning_set'
-    Validation_set = '/Users/yentsokuo/git_repo/WKN_SSO/viberation_dataset/Validation_set'
+    Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+    Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     work_condition = [1,2]
     exp_topic = 'noSSO'
     exp_num = 6
@@ -128,11 +128,11 @@ if __name__ == "__main__":
 
     # regular train
     # iX = [500, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 77, 83]
-    iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 50, 50]
+    iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60]
     start_time1 = time.time()
     wc1 = []
     wc2 = []
-    for term in range(30):
+    for term in range(1):
         for wc in work_condition:
             exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
             act_mse ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, iX, wc)
@@ -140,7 +140,7 @@ if __name__ == "__main__":
                 wc1.append(act_mse)
             elif wc == 2:
                 wc2.append(act_mse)
-            model_name = '/Users/yentsokuo/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
+            model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
             torch.save(train_result, model_name)
             print("{}, PTH saved done!".format(model_name))
         end_time1 = time.time()

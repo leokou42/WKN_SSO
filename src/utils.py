@@ -44,7 +44,7 @@ def folder_total_len(folder_path):
     return folder_total
 
 def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
-    bearing_name = os.path.join(root_dir, file_path.split('/')[-2])
+    bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
     file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
 
     folder_tot = 0
