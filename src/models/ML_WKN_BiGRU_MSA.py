@@ -56,7 +56,8 @@ class ML_WKN_BiGRU_MSA(nn.Module):
             nn.MaxPool1d(kernel_size=2, stride=2),
             nn.Conv1d(self.sX[3], self.sX[5], kernel_size=self.sX[6], padding='same'),  # x_5, SSO update output channel, original = 32
                                                                                         # x_6, SSO update kernel size, original = 3
-            nn.MaxPool1d(kernel_size=2, stride=2))
+            nn.MaxPool1d(kernel_size=2, stride=2)
+            )
 
         self.BiGRU = nn.GRU(input_size=self.sX[5], hidden_size=8, num_layers=sX[7], bidirectional=False) # x_7, SSO update num_layers, original = 1
 
@@ -90,8 +91,6 @@ if __name__ == "__main__":
     # test
     def SSO_hp_trans(iX):
         iX[0] = iX[0]/10000
-        iX[8] = iX[8]/100
-        iX[10] = iX[10]/100
         iX[11] = iX[11]/100
         iX[12] = iX[12]/100
 

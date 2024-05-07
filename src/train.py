@@ -121,7 +121,7 @@ if __name__ == "__main__":
     hyper_parameter = [32,30]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
-    work_condition = [1,2]
+    work_condition = [2]
     exp_topic = 'noSSO'
     exp_num = 6
     train_vali = [Learning_set, Validation_set, 3]
@@ -141,7 +141,7 @@ if __name__ == "__main__":
             elif wc == 2:
                 wc2.append(act_mse)
             model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
-            torch.save(train_result, model_name)
+            # torch.save(train_result, model_name)
             print("{}, PTH saved done!".format(model_name))
         end_time1 = time.time()
         train_time = end_time1-start_time1
@@ -153,6 +153,6 @@ if __name__ == "__main__":
         print(wc1, sum(wc1)/(term+1))
         print(wc2, sum(wc2)/(term+1))
     
-    csv_name = 'ML_WKN_BiGRU_MSA_0.6/0.6'
+    csv_name = 'ML_WKN_BiGRU_MSA_0.50.5'
     train_2_csv(csv_name, wc1, wc2)
 
