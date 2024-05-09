@@ -27,7 +27,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     Validation_type = Learning_Validation[2]
     
     # setup experiment working condition and dataset location
-    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[sX[11]/100, sX[12]/100])
+    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100])
     val_data = CustomDataSet(Validation_set, work_condition, transform=None, mode='train')
 
     # ===================================================================================================
@@ -118,24 +118,29 @@ if __name__ == "__main__":
     random.seed(42)
     np.random.seed(0)
     setup_seed(20)
+    torch.cuda.empty_cache()
     hyper_parameter = [32,30]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
-    work_condition = [2]
+    work_condition = [1]
     exp_topic = 'noSSO'
-    exp_num = 6
+    exp_num = 0
     train_vali = [Learning_set, Validation_set, 3]
 
     # regular train
     # iX = [500, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 77, 83]
-    iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 70, 70]
+    iX = [[100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 50, 50],
+          [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60],
+          [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 70, 70],
+          [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 80, 80],
+          [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 90, 90] ]
     start_time1 = time.time()
     wc1 = []
     wc2 = []
-    for term in range(30):
+    for term in range(5):
         for wc in work_condition:
             exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-            act_mse ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, iX, wc)
+            act_mse ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, iX[term], wc)
             if wc == 1:
                 wc1.append(act_mse)
             elif wc == 2:
@@ -153,6 +158,6 @@ if __name__ == "__main__":
         print(wc1, sum(wc1)/(term+1))
         print(wc2, sum(wc2)/(term+1))
     
-    csv_name = 'ML_WKN_BiGRU_MSA_0.50.5'
+    csv_name = 'ML_WKN_BiGRU_MSA_0.90.9'
     train_2_csv(csv_name, wc1, wc2)
 

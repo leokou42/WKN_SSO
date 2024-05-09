@@ -6,11 +6,8 @@ from dataset_loader import CustomDataSet
 import time
 import math
 
-from models.LA_WKN_BiGRU import LA_WKN_BiGRU
+from models.ML_WKN_BiGRU_MSA import ML_WKN_BiGRU_MSA
 from utils import *
-
-work_condition = 1
-batch_size = 32
 
 def Test_pipeline(trained_pth, batch_size, sX, work_condition):
     if work_condition == 1:
@@ -33,7 +30,7 @@ def Test_pipeline(trained_pth, batch_size, sX, work_condition):
         print(device)
 
         sX = SSO_hp_trans(sX)
-        model = LA_WKN_BiGRU(sX).to(device)
+        model = ML_WKN_BiGRU_MSA(sX).to(device)
 
         model.load_state_dict(torch.load(trained_pth))
         model.eval()
@@ -57,15 +54,13 @@ def Test_pipeline(trained_pth, batch_size, sX, work_condition):
     return Bearing_name, ans
 
 # test
-
 if __name__ == "__main__":
     # setup
     exp_topic = 'noSSO'
-    exp_num = 5
+    exp_num = 6
     batch_size = 32
-    work_condition = [1,2]
-    X = [0.001, 32, 64, 16, 32, 32, 3, 1, 0.5, 64, 0.3, 0.5, 0.5]
-
+    work_condition = [1]
+    X = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 70, 70]
     start_time2 = time.time()
     for wc in work_condition:
         trained_pth = 'F:/git_repo/WKN_SSO/result/pth/'+exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st.pth'

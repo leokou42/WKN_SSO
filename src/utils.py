@@ -89,7 +89,7 @@ def output_2_csv(file_name, result):
 def output_2_plot(file_name, result, show_pic = False):
     plt.figure(figsize=(10, 6))
 
-    MA_result = moving_avg(result, 5)
+    MA_result = moving_avg(result, 10)
     plt.plot(result, label='prediction', color='blue')
     plt.plot(MA_result, label='MA prediction', color='red')
 
