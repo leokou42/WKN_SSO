@@ -28,7 +28,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     
     # setup experiment working condition and dataset location
     train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100])
-    val_data = CustomDataSet(Validation_set, work_condition, transform=None, mode='train')
+    val_data = CustomDataSet(Validation_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100])
 
     # ===================================================================================================
     # 不同的validation方法:
