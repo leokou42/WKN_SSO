@@ -34,6 +34,39 @@ def two_stage_hi(twist_point, slope, l, draw=False):
 
     return hi
 
+def two_stage_hi2(n, l, draw=False):
+    t_values = np.linspace(1, 0, l)
+    hi = 1- (t_values**n)
+    hi = hi[::-1]
+    # 繪製圖表
+    if draw == True:
+        plt.plot(hi)
+        plt.xlabel('Time')
+        plt.ylabel('Health Index')
+        plt.title('Plot of HI')
+        plt.show()
+
+    return hi
+
+def two_stage_hi3(twist_point, slope, n, l, draw=False):
+    hi1_length = int(l * slope)
+    hi2_length = l - hi1_length  # 確保總長度等於 l
+    hi1 = np.linspace(1, twist_point, hi1_length)
+    # hi2 = np.linspace(twist_point, 0, hi2_length)
+    t_values = np.linspace(twist_point**(1/n), 0, hi2_length)
+    hi2 = twist_point - (t_values**n)
+    hi2 = hi2[::-1]
+    hi = np.concatenate([hi1, hi2])
+    # 繪製圖表
+    if draw == True:
+        plt.plot(hi)
+        plt.xlabel('Time')
+        plt.ylabel('Health Index')
+        plt.title('Plot of HI')
+        plt.show()
+
+    return hi
+
 def folder_total_len(folder_path):
     folder_total = 0
     if os.path.isdir(folder_path):
@@ -43,7 +76,26 @@ def folder_total_len(folder_path):
     
     return folder_total
 
-def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
+def get_health_index(root_dir, file_path, hi_type=0, two_stage_hp=[0.6, 0.6], n=2):
+    bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
+    file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
+
+    folder_tot = 0
+    for filename in os.listdir(bearing_name):
+        if filename.endswith('.csv'):
+            folder_tot += 1
+    if hi_type == 0:
+        hi = np.linspace(1,0,folder_tot)
+    elif hi_type == 1:
+        hi = two_stage_hi(two_stage_hp[0],two_stage_hp[1], folder_tot)
+    elif hi_type == 2:
+        hi = two_stage_hi2(n, folder_tot)
+    elif hi_type == 3:
+        hi = two_stage_hi3(two_stage_hp[0], two_stage_hp[1], n, folder_tot)
+
+    return hi[file_num-1]
+
+def get_health_index2(root_dir, file_path, hi_type=1, start_point=1, n=2):
     bearing_name = os.path.join(root_dir, file_path.split('\\')[-2])
     file_num = int(file_path.split('/')[-1].split('_')[-1].split('.')[0])
 
@@ -54,7 +106,7 @@ def get_health_index(root_dir, file_path, hi_type=1, two_stage_hp=[0.6, 0.6]):
     if hi_type == 1:
         hi = np.linspace(1,0,folder_tot)
     elif hi_type == 2:
-        hi = two_stage_hi(two_stage_hp[0],two_stage_hp[1], folder_tot)
+        hi = two_stage_hi2(start_point, folder_tot, n)
 
     return hi[file_num-1]
 

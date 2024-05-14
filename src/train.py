@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 import time
 import math
+import gc
 
 from utils import *
 from models.ML_WKN_BiGRU_MSA import ML_WKN_BiGRU_MSA
@@ -27,8 +28,8 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     Validation_type = Learning_Validation[2]
     
     # setup experiment working condition and dataset location
-    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100], n=2)
-    val_data = CustomDataSet(Validation_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100], n=2)
+    train_data = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[sX[11]/100, sX[12]/100], n=sX[13])
+    val_data = CustomDataSet(Validation_set, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[sX[11]/100, sX[12]/100], n=sX[13])
 
     # ===================================================================================================
     # 不同的validation方法:
@@ -95,7 +96,8 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
             early_stop = 0
         all_loss.append(loss.cpu().detach().numpy())
         all_mse.append(average_mse)
-        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
+        if epoch % 10 == 9 or epoch == 0:
+            print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
         # if early_stop > 9:
         #     print("underfitting, break")
         #     break
@@ -118,7 +120,7 @@ if __name__ == "__main__":
     np.random.seed(0)
     setup_seed(20)
     # setup
-    hyper_parameter = [32,30]   # [batch_size, num_epochs]
+    hyper_parameter = [32,20]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
     work_condition = [1,2]
@@ -128,31 +130,37 @@ if __name__ == "__main__":
 
     # regular train
     # iX = [500, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 77, 83]
-    iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60]
+    iX = [[100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 80, 80, 5]]
+    # iX = [[100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60, 2],
+    #       [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60, 5],
+    #       [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 80, 80, 2],
+    #       [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 80, 80, 5]]
     start_time1 = time.time()
-    wc1 = []
-    wc2 = []
-    for term in range(30):
-        for wc in work_condition:
-            exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-            act_mse ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, iX, wc)
-            if wc == 1:
-                wc1.append(act_mse)
-            elif wc == 2:
-                wc2.append(act_mse)
-            model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
-            torch.save(train_result, model_name)
-            print("{}, PTH saved done!".format(model_name))
-        end_time1 = time.time()
-        train_time = end_time1-start_time1
+    for i in range(len(iX)):
+        wc1 = []
+        wc2 = []
+        for term in range(30):
+            for wc in work_condition:
+                exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
+                act_mse ,_ ,train_result = Train_pipeline(train_vali, hyper_parameter, iX[i], wc)
+                if wc == 1:
+                    wc1.append(act_mse)
+                elif wc == 2:
+                    wc2.append(act_mse)
+                model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
+                torch.save(train_result, model_name)
+                print("{}, PTH saved done!".format(model_name))
+            end_time1 = time.time()
+            train_time = end_time1-start_time1
 
-        print("Train Finish !")
-        print("Train Time = {}".format(train_time))
+            print("Train Finish !")
+            print("Train Time = {}".format(train_time))
 
-        print(f'\nEpoch {term + 1}/30')
-        print(wc1, sum(wc1)/(term+1))                                                                                           |          print(wc1)
-        print(wc2, sum(wc2)/(term+1)) 
-    
-    csv_name = 'ML_WKN_BiGRU_MSA_6060'
-    train_2_csv(csv_name, wc1, wc2)
+            print(f'\nEpoch {term + 1}/30')
+            print(wc1, sum(wc1)/(term+1))
+            print(wc2, sum(wc2)/(term+1)) 
+        
+        csv_num = str(iX[i][11])+str(iX[i][12])+str(iX[i][13])
+        csv_name = 'ML_WKN_BiGRU_MSA_'+csv_num
+        train_2_csv(csv_name, wc1, wc2)
 
