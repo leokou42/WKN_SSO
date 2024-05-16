@@ -113,9 +113,9 @@ if __name__ == "__main__":
     hyper_parameter = [32, 15]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
-    work_condition = [1]
+    work_condition = [2]
     exp_topic = 'SSO_ML'
-    exp_num = 2
+    exp_num = 1
 
     random_number_range=[(1, 1000),     # learning rate     0
                         (1, 64),        # LA kernel num     1
@@ -144,22 +144,28 @@ if __name__ == "__main__":
     # train
     start_time1 = time.time()
     train_vali = [Learning_set, Validation_set, 3]
-    c = 3
-    for wc in work_condition:
-        train_detail = [train_vali, hyper_parameter, wc]
-        print("start SSO !")
-        print(train_detail)
-        exp_name = exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'
-        all_result = SSO_train(exp_name, Cg[c], Cp[c], Cw[c], Nsol, Ngen, random_number_range, iX, train_detail)
-        min_key, min_value = find_min_key_value(all_result)
-        print("min_key = {} , value of {}".format(min_key, min_value))
-        csv_name = 'F:/git_repo/WKN_SSO/result/SSO_result/'+exp_topic+'_wc'+str(wc)+'_'+str(exp_num)+'st'+'_vali'+str(train_vali[2])+'_'+'SSOHP_setup_'+str(c+1)+'st.csv'
-        print(all_result)
-        SSO_2_csv(csv_name, all_result)
+    num_c = 4
+    for term in range(exp_num):
+        print("Current terms = {}".format(term+1))
+        for c in range(num_c-1):
+            c+=1
+            for wc in work_condition:
+                train_detail = [train_vali, hyper_parameter, wc]
+                print("start SSO !")
+                print(train_detail)
+                exp_name = exp_topic+'_wc'+str(wc)+'_'+str(term+1)+'st'
+                iX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60]
+                print("Cg = {}, Cp = {}, Cw = {}".format(Cg[c], Cp[c], Cw[c]))
+                all_result = SSO_train(exp_name, Cg[c], Cp[c], Cw[c], Nsol, Ngen, random_number_range, iX, train_detail)
+                min_key, min_value = find_min_key_value(all_result)
+                print("min_key = {} , value of {}".format(min_key, min_value))
+                csv_name = 'F:/git_repo/WKN_SSO/result/SSO_result/'+exp_topic+'_wc'+str(wc)+'_'+str(term+1)+'st'+'_vali'+str(train_vali[2])+'_'+'SSOHP_setup_'+str(c+1)+'st.csv'
+                print(all_result)
+                SSO_2_csv(csv_name, all_result)
 
-    end_time1 = time.time()
-    train_time = end_time1-start_time1
+            end_time1 = time.time()
+            train_time = end_time1-start_time1
 
-    print("SSO Train Finish !")
-    print("SSO Train Time = {}".format(train_time))
+            print("SSO Train Finish !")
+            print("SSO Train Time = {}".format(train_time))
 

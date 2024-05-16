@@ -15,6 +15,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     # access to cuda
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
+    print(sX)
 
     # hyperparameter setup
     # sX = SSO_hp_trans(iX)
@@ -95,7 +96,8 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
             early_stop = 0
         all_loss.append(loss.cpu().detach().numpy())
         all_mse.append(average_mse)
-        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
+        if epoch % 10 == 9 or epoch == 0 or epoch == num_epochs-1:
+            print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
         # if early_stop > 9:
         #     print("underfitting, break")
         #     break

@@ -141,6 +141,11 @@ def generate_random_numbers(number_range):
 def random_select(n, random_number_range):
     return random.uniform(random_number_range[n][0],random_number_range[n][1])
 
+def adjust_value(X, sol, job, random_number_range, random_select):
+    if X[sol][job] < random_number_range[job][0] or X[sol][job] > random_number_range[job][1]:
+        X[sol][job] = int(random_select(job, random_number_range)) if X[sol][job] > 1 else random_select(job, random_number_range)
+    return X
+
 def find_min_key_value(dictionary):
     if not dictionary:
         return None, None  # 如果字典是空的，返回None
