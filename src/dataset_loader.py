@@ -5,6 +5,7 @@ import os
 import torch
 from torch.utils.data import Dataset
 from utils import *
+from torch.utils.data import DataLoader
 
 class CustomDataSet(Dataset):
     def __init__(self, root_dir, work_condition, transform=None, mode='train', label_style=1, two_stage_hp=[0.6, 0.6]):
@@ -19,8 +20,7 @@ class CustomDataSet(Dataset):
     def get_file_paths(self):
         file_paths = []
         if self.mode == 'train':
-            wk = 'Bearing'
-            wk = wk + str(self.work_condition)
+            wk = 'Bearing' + str(self.work_condition)
             for folder in os.listdir(self.root_dir):
                 if wk in folder:
                     folder_path = os.path.join(self.root_dir, folder)
@@ -49,7 +49,7 @@ class CustomDataSet(Dataset):
         
         inputs = data['horiz accel'].values.astype(float)
         inputs = min_max_scale(inputs).reshape(1, -1)
-        inputs = torch.from_numpy(inputs.astype(np.float32)).cuda()
+        inputs = torch.from_numpy(inputs.astype(np.float32))
         # if inputs.size() != torch.Size([1, 2560]):
         #     print(inputs.shape)
 
@@ -67,8 +67,27 @@ class CustomDataSet(Dataset):
             
             return inputs
 
-        
     def __len__(self):
         return len(self.file_paths)
         
     
+if __name__ == '__main__':
+    # hyperparameter setup
+    # sX = SSO_hp_trans(iX)
+    hp = [32,30]
+    batch_size = hp[0]
+    num_epochs = hp[1]
+    Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
+    Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
+    Learning_Validation = [Learning_set, Validation_set, 3]
+    sX = [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 50, 50]
+    learning_rate = sX[0]/100000 # SSO update learning_rate, original = 0.001
+    # learning_rate = 0.001 # SSO update learning_rate, original = 0.001
+    Learning_set = Learning_Validation[0]
+    Validation_set = Learning_Validation[1]
+    Validation_type = Learning_Validation[2]
+    work_condition = 1
+    train_dataset = CustomDataSet(Learning_set, work_condition, transform=None, mode='train', label_style=2, two_stage_hp=[sX[11]/100, sX[12]/100])
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+    print(train_loader)

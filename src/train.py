@@ -12,6 +12,9 @@ from models.ML_WKN_BiGRU_MSA import ML_WKN_BiGRU_MSA
 from dataset_loader import CustomDataSet
 
 def Train_pipeline(Learning_Validation, hp, sX, work_condition):
+    random.seed(42)
+    np.random.seed(0)
+    setup_seed(20)
     # access to cuda
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -40,15 +43,15 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
     elif Validation_type == 2:    # 照順序抽樣
         train_dataset = torch.utils.data.Subset(train_data, range(train_size))
         val_dataset = torch.utils.data.Subset(train_data, range(train_size, train_size + val_size))
-    elif Validation_type == 3:    # 使用不同的軸承資料做驗證
+    elif Validation_type == 3:    # 使用不同的軸承資料做驗證 
         train_dataset = train_data
         val_dataset = val_data
     # 改成k fold驗證方法
 
     # ===================================================================================================
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, num_workers=4, pin_memory=True)
 
     # model selection
     # model = CNN_BiGRU().to(device)
@@ -96,6 +99,7 @@ def Train_pipeline(Learning_Validation, hp, sX, work_condition):
             early_stop = 0
         all_loss.append(loss.cpu().detach().numpy())
         all_mse.append(average_mse)
+        # print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
         if epoch % 10 == 9 or epoch == 0 or epoch == num_epochs-1:
             print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {loss:.4f}, Validation MSE: {average_mse:.4f}')
         # if early_stop > 9:
@@ -121,21 +125,20 @@ if __name__ == "__main__":
     np.random.seed(0)
     setup_seed(20)
     torch.cuda.empty_cache()
-    hyper_parameter = [32,30]   # [batch_size, num_epochs]
+    torch.backends.cudnn.benchmark = True  # 開啟 CuDNN 自動調整
+    hyper_parameter = [32, 30]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
-    work_condition = [1]
+    work_condition = [1,2]
     exp_topic = 'noSSO'
     exp_num = 0
     train_vali = [Learning_set, Validation_set, 3]
 
     # regular train
-    # iX = [500, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 77, 83]
     iX = [[100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 50, 50],
           [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 60, 60],
-          [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 70, 70],
-          [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 80, 80],
-          [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 90, 90] ]
+          [100, 32, 64, 16, 32, 32, 3, 1, 50, 64, 30, 80, 80]]
+    
     start_time1 = time.time()
     wc1 = []
     wc2 = []
@@ -148,7 +151,7 @@ if __name__ == "__main__":
             elif wc == 2:
                 wc2.append(act_mse)
             model_name = 'F:/git_repo/WKN_SSO/result/pth/' + exp_name + '.pth'
-            # torch.save(train_result, model_name)
+            torch.save(train_result, model_name)
             print("{}, PTH saved done!".format(model_name))
         end_time1 = time.time()
         train_time = end_time1-start_time1

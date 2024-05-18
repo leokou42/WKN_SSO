@@ -110,12 +110,12 @@ def SSO_train(exp_name, Cg, Cp, Cw, Nsol, Ngen, random_number_range, initial_sol
 
 if __name__ == "__main__":
     # setup
-    hyper_parameter = [32, 15]   # [batch_size, num_epochs]
+    hyper_parameter = [32, 30]   # [batch_size, num_epochs]
     Learning_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Learning_set/'
     Validation_set = 'F:/git_repo/WKN_SSO/viberation_dataset/Validation_set/'
-    work_condition = [2]
-    exp_topic = 'SSO_ML'
-    exp_num = 1
+    work_condition = [1, 2]
+    exp_topic = 'Final_SSO_ML'
+    exp_num = 30
 
     random_number_range=[(1, 1000),     # learning rate     0
                         (1, 64),        # LA kernel num     1
@@ -138,17 +138,16 @@ if __name__ == "__main__":
     Cg = [0.7, 0.1, 0.1, 0.1]  #GBEST區間
     Cp = [0.8, 0.8, 0.2, 0.2]  #PBEST區間
     Cw = [0.9, 0.9, 0.9, 0.3]  #前解區間
-    Nsol = 6
+    Nsol = 5
     Ngen = 10
 
     # train
     start_time1 = time.time()
     train_vali = [Learning_set, Validation_set, 3]
-    num_c = 4
+    num_c = 1
     for term in range(exp_num):
         print("Current terms = {}".format(term+1))
-        for c in range(num_c-1):
-            c+=1
+        for c in range(num_c):
             for wc in work_condition:
                 train_detail = [train_vali, hyper_parameter, wc]
                 print("start SSO !")
